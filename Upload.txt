@@ -1,0 +1,6 @@
+lcd "C:\Users\marki\Google Drive\Techie Stuff\WebTree"
+cd /home/pi/Prayers
+put *.py
+put *.ico
+put *.txt
+exit
