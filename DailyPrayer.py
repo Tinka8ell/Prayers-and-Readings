@@ -12,6 +12,10 @@ from BibleReading import BibleReading, cleanText, tagText
 from WebTree import WebTree
 
 
+def isStrong(nextP):
+    return nextP.name == "strong" or nextP.name == "b"
+
+
 class State(Enum):
     SKIPPING = auto()
     PROCESSING_READINGS = auto()
@@ -20,6 +24,10 @@ class State(Enum):
 
 
 class DailyPrayer(WebTree):
+    """
+    Grab the verses and meditation from the daily prayer
+    of the Nothumbrian Community.
+    """
 
     def __init__(self, url, version="NIVUK"):  # default to English NIV
         self.version = version
@@ -36,8 +44,11 @@ class DailyPrayer(WebTree):
 </html>'''
         return
 
-    def parseContents(self, nextP, indent):
+
+    def parseContents(self, nextP, indent, parentIsStrong=False):
+        # parentIsStrong is used for extra inner wrapping of strong (or bold) text
         if isinstance(nextP, NavigableString):
+            # print(indent, "NavigableString: state=", self.state)
             if self.state != State.SKIPPING:
                 # ## print(indent, "Child (text):", nextP.string)
                 pass
@@ -45,6 +56,7 @@ class DailyPrayer(WebTree):
             text = nextP.string
             self.text += " " + cleanText(text)
         else:
+            # print(indent, "Other NextP: state=", self.state)
             if self.state != State.SKIPPING:
                 # ## print(indent, "Child (" + nextP.name + "):")
                 pass
@@ -59,6 +71,7 @@ class DailyPrayer(WebTree):
                     self.state = State.SKIPPING
                 self.text = ""  # start new text
             if self.state == State.PROCESSING_READINGS:
+                # print(nextP.prettify())
                 # only interested in the h2 and strong
                 if nextP.name == "strong":
                     self.text = ""
@@ -67,7 +80,7 @@ class DailyPrayer(WebTree):
                     self.text += "\n"
             ### do any children ###
             for child in nextP.children:
-                self.parseContents(child, indent + "   ")
+                self.parseContents(child, indent + "   ", parentIsStrong=isStrong(nextP))
             ### process the end of tags ###
             ignore = ("div", "sup", "br", "article")
             if self.state == State.READING_TITLE:
@@ -79,7 +92,7 @@ class DailyPrayer(WebTree):
                     if nextP.name == "h2":
                         # ## print("Reading Heading:", text)
                         self.daily.append(text)
-                    elif nextP.name == "strong" or nextP.name == "b":
+                    elif isStrong(nextP) or parentIsStrong:
                         if len(text) > 0:  # ignore blank lines
                             if not self.date:  # not yet checked the day
                                 pageDate = text
@@ -90,10 +103,13 @@ class DailyPrayer(WebTree):
                                 self.isToday = today == datetime.date()
                                 # ## print("Date:", pageDate, datetime, self.date, self.isToday)
                             else:  # get the scripture passage
-                                # ## print("Scripture:", text)
+                                # print(indent, "Scripture:", text)
                                 self.daily.append(text)
+                        '''else:
+                            print(indent, "Blank bold")
+                        '''
                     else:
-                        # ## print("Ignoring:", nextP)
+                        # print(indent, "Ignoring:", nextP)
                         pass  # ignore all else (including "p")
                 elif self.state != State.SKIPPING:
                     # parsing meditation

@@ -1,19 +1,26 @@
 # Process a bible passage
-'''
-import urllib.request # as Request
-# used to parse values into the url
-import urllib.parse
-from pathlib import Path
-from bs4 import BeautifulSoup
-from dateutil.parser import parse
-from datetime import date
-'''
-from WebTree import WebTree
-import re
+# 
+#     Look up a bible reading on Bible Gateway.
+#     
+#     Default to anglicised NIV, but can be overridden with version.
+#     Using WebTree read the page and extract the text only 
+#     to internal list of paragraphs.
+#     So skip titles, headings, verse and chapter numbers.
+#     Show the paragraphs as html.
+    
 import os
+import re
+
+from WebTree import WebTree
 
 
 def cleanText(text, xmlReplace=False):
+    """
+    Utility to clean up text that may be in a web page.
+    
+    Basically remove non-ascii punctuation.
+    Also remove excessive white space characters.
+    """
     if text:
         swaps = {"’": "'",  # remove funny apostrophes
                  "‘": "'",  # remove funny apostrophes
@@ -36,6 +43,9 @@ def cleanText(text, xmlReplace=False):
 
 
 def tagText(text, tag):
+    """
+    Wrap an html tag arround some text.
+    """
     html = ''
     if text:
         closeTag = "/" + tag.split(" ")[0]  # strip after first space
@@ -47,8 +57,31 @@ def tagText(text, tag):
             html += "<" + closeTag + ">"
     return html
 
+def removeSection(passage, section, class_):
+    """
+    Remove all sections with given class from the passage.  
+    Passage is a BeautifulSoup sub-tree.
+    Section is html tag or list of tags.
+    Class is a class name, regular expression, or list of class names. 
+    """
+    div = passage.find(section, class_=class_)
+    # remove matching sections
+    while div:
+        div.decompose()  # remove it
+        div = passage.find(section, class_=class_)
+    return
+
 
 class BibleReading(WebTree):
+    """
+    Look up a bible reading on Bible Gateway.
+    
+    Default to anglicised NIV, but can be overridden with version.
+    Using WebTree read the page and extract the text only 
+    to internal list of paragraphs.
+    So skip titles, headings, verse and chapter numbers.
+    Show the paragraphs as html.
+    """
 
     def __init__(self, reading, version="NIVUK"):  # default to English NIV
         self.version = version
@@ -59,49 +92,39 @@ class BibleReading(WebTree):
         return
 
     def parse(self):
+        """
+        Overrides the parent class (do nothing) and extracts
+        all the text less the chapter, verse numbers and any
+        headings and titles.
+        Create a list of paragraphs and store in self.paras.
+        """
         paras = []
+        # skip to the "passage text" divisions in the tree
         passages = self.root.findAll('div', class_="passage-text")
+        # what if no passage found?
         for passage in passages:
-            # what if no passage found?
             # print("passage:", passage.prettify()) # debug
-            div = passage.find("div", class_="footnotes")
-            # remove footnotes
-            while div:
-                div.decompose()  # remove it
-                div = passage.find("div", class_="footnotes")
-            # remove crossrefs
-            div = passage.find("div", class_=re.compile("crossrefs"))
-            while div:
-                div.decompose()  # remove it
-                div = passage.find("div", class_=re.compile("crossrefs"))
-            # remove publisher info
-            div = passage.find("div", class_=re.compile("publisher"))
-            while div:
-                div.decompose()  # remove it
-                div = passage.find("div", class_=re.compile("publisher"))
+            # remove footnote divisions
+            removeSection(passage, "div", "footnotes")
+            # remove crossref divisions
+            removeSection(passage, "div", re.compile("crossrefs"))
+            # remove publisher info divisions
+            removeSection(passage, "div", re.compile("publisher"))
             # print("cleaned passage:", passage.prettify()) # debug
             ps = passage.find_all("p")
             for nextP in ps:
                 # remove verse numbers, chapter numbers and footnotes
-                verse = nextP.find(["sup", "span"], class_=[
-                                   "versenum", "chapternum", "footnote"])
-                while verse:
-                    verse.decompose()  # remove it
-                    verse = nextP.find(["sup", "span"], class_=[
-                                       "versenum", "chapternum", "footnote"])
+                removeSection(nextP, 
+                              ["sup", "span"], 
+                              ["versenum", "chapternum", "footnote"])
                 # ## print("nextP:", nextP.prettify()) # debug
                 text = ""
                 # compile paragraph
                 for string in nextP.stripped_strings:
                     string = string.strip()
-                    '''
-               if string[0].isalnum():
-                  text += " " + string
-               else:
-                  text += string
-               '''
                     text += " " + string
                 text = text.strip()
+                # why am I removing trailing quotes?
                 while text[-1] == "'" or text[-1] == '"':
                     text = text[:-1]
                 while text[0] == "'" or text[0] == '"':
@@ -111,6 +134,9 @@ class BibleReading(WebTree):
         return
 
     def show(self):
+        """
+        Extended display function for debugging.
+        """
         super().show()
         print("reading:", self.reading)
         print("version:", self.version)
@@ -120,12 +146,23 @@ class BibleReading(WebTree):
         return
 
     def showPassage(self):
+        """
+        Display passage for debugging.
+        """
         for para in self.paras:
             print(">>>", para)
         print("reading:", self.reading)
         return
 
     def htmlParas(self, f, reading=False):
+        """
+        Format the paragraphs as html an send to given output file f.
+         
+        Wrap the paragraphs in a "div" of class "bible".
+            Wrap each paragraph in a "p".
+            If reading is requested:
+            Wrap it in a "p" of class "reading".
+        """
         print('<div class="bible">', file=f)
         for para in self.paras:
             print(tagText(para, "p"), file=f)
@@ -136,6 +173,9 @@ class BibleReading(WebTree):
 
 
 if __name__ == "__main__":
+    """
+    Test code while debugging.
+    """
     '''
     text = "Sovereign Lord , for the awesome day of the Lord 's judgment is near. The"
     print(text, re.sub(r"(\w)\s+([!\"()-;:'.,?])", r"\1\2", text))
@@ -143,13 +183,13 @@ if __name__ == "__main__":
     print(text, re.sub(r"(\w)\s+([!\"()-;:'.,?])", r"\1\2", text))
     '''
     '''
-   bible = BibleReading("Psalm 147:2–3", version="NLT")
-   bible.showPassage()
-   print()
-   bible.htmlParas(None)
-   print()
-   bible.show()
-   '''
+    bible = BibleReading("Psalm 147:2–3", version="NLT")
+    bible.showPassage()
+    print()
+    bible.htmlParas(None)
+    print()
+    bible.show()
+    '''
     for i in range(1, 9):
         bible = BibleReading("song " + str(i), version="NLT")
         bible.htmlParas(None, reading=True)

@@ -24,8 +24,12 @@ P.Lord, You have always lightened this darkness of mine; and though the night is
 P.Lord, You have always spoken when time was ripe; and though you be silent now, today I believe.
 I.Northumbrian
 H.Prayers for others
-U.OMS Prayers https://orderofthemustardseed.com/en/an-oms-intercession-introduction/an-oms-intercession-abridged/
-U.World Watch List https://worldwatch.opendoorsuk.org/persecution/world-watch-list/
+#.U.OMS Prayers https://orderofthemustardseed.com/en/an-oms-intercession-introduction/an-oms-intercession-abridged/
+#.U.OMS Prayers https://omstemp.curve.org.uk/en/an-oms-intercession-introduction/an-oms-intercession-abridged/
+U.OMS Prayers https://www.orderofthemustardseed.com/members/ongoing-formation/an-oms-intercession/intercession-abridged-version/
+#.U.World Watch List https://worldwatch.opendoorsuk.org/persecution/world-watch-list/
+U.World Watch List https://www.opendoorsuk.org/persecution/world-watch-list/
+U.The Prayer Shield List https://theprayershield.uk/scriptures-declarations/
 H.Canticle
 B.Psalm 63:7 - In the shadow of Your wings I will sing Your praises, O Lord.
 B.Psalm 27:1 - The Lord is my light, my salvation; whom shall I fear? The Lord is the refuge of my life; of whom shall I be afraid?
