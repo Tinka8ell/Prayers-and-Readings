@@ -1,0 +1,3 @@
+@echo off
+echo Update to PiWebSite ...
+sftp pi@PiWebSite  < Upload.txt
