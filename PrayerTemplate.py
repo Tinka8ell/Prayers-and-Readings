@@ -12,7 +12,7 @@ from Moravian import Moravian
 
 
 def tagDay(prefix, day, suffix):
-    html = tagText(prifix + day + suffix, 
+    html = tagText(prifix + day + suffix,
                    'a href="./' + day + '.html"')
     return html
 
@@ -91,8 +91,8 @@ class PrayerTemplate():
             self.closeTag(f)
             self.closingTag = "</" + tag + ">"
             tag = "<" + tag + ">"
-        print(tag + cleanText(para, xmlReplace=True), 
-              end='', 
+        print(tag + cleanText(para, xmlReplace=True),
+              end='',
               file=f)  # no newline
         # print("OpenTag -", tag, self.closingTag, isNotBr)
         return
@@ -154,8 +154,8 @@ class PrayerTemplate():
                                 raise ValueError()
                             count += 1
                         self.weekLink = '<div class="left">'
-                        yesterday = (thisDay + day1).strftime(dateFormat)
-                        self.weekLink += tagDay('<<<<< ', yesterday, '') 
+                        yesterday = (thisDay - day1).strftime(dateFormat)
+                        self.weekLink += tagDay('<<<<< ', yesterday, '')
                         self.weekLink += '</div><br/><div class="right">'
                         tomorrow = (thisDay + day1).strftime(dateFormat)
                         self.weekLink += tagDay('', tomorrow, ' >>>>>')
