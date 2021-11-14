@@ -12,7 +12,7 @@ from Moravian import Moravian
 
 
 def tagDay(prefix, day, suffix):
-    html = tagText(prifix + day + suffix,
+    html = tagText(prefix + day + suffix,
                    'a href="./' + day + '.html"')
     return html
 
