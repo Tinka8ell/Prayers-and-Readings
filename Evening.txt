@@ -1,9 +1,9 @@
 T.Evening Prayer based on Northumbria Community Prayers and Moravian Readings
 D.
 H.Pause
-As I enter prayer now; 
-I pause to be still; 
-to breathe slowly; 
+As I enter prayer now;
+I pause to be still;
+to breathe slowly;
 to re-centre my scattered senses upon the presence of God
 H.Preperation
 I.Moravian
@@ -29,7 +29,7 @@ H.Prayers for others
 U.OMS Prayers https://www.orderofthemustardseed.com/members/ongoing-formation/an-oms-intercession/intercession-abridged-version/
 #.U.World Watch List https://worldwatch.opendoorsuk.org/persecution/world-watch-list/
 U.World Watch List https://www.opendoorsuk.org/persecution/world-watch-list/
-U.The Prayer Shield List https://theprayershield.uk/scriptures-declarations/
+#.U.The Prayer Shield List https://theprayershield.uk/scriptures-declarations/
 H.Canticle
 B.Psalm 63:7 - In the shadow of Your wings I will sing Your praises, O Lord.
 B.Psalm 27:1 - The Lord is my light, my salvation; whom shall I fear? The Lord is the refuge of my life; of whom shall I be afraid?
