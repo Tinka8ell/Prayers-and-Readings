@@ -24,12 +24,15 @@ class PrayerTemplate():
         self.name = name
         self.p1 = '''<!DOCTYPE html>
 <html>
-<head>
-<title>'''
-        self.p2 = '''</title>
-<link rel="stylesheet" type="text/css" href="/style/style.css">
-</head>
-<body>'''
+    <head>
+        <title>'''
+        self.p2 = '''
+        </title>
+        <meta name="color-scheme" content="light dark">
+        <meta name="supported-color-schemes" content="light dark">
+        <link rel="stylesheet" type="text/css" href="/style/style.css">
+    </head>
+    <body>'''
         self.p3 = '''</body>
 </html>'''
         self.northumbrian = \

@@ -3,4 +3,9 @@ cd /home/pi/Prayers
 put *.py
 put *.ico
 put *.txt
+cd /var/www/html
+put *.html
+lcd "style"
+cd style
+put *.css
 exit

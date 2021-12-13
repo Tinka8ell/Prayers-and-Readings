@@ -1,0 +1,61 @@
+/* Light mode */
+@media (prefers-color-scheme: light) {
+    body {
+        background-color: white;
+        color: black;
+    }
+    a {
+  		color: #0033cc;
+	}
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: black;
+        color: white;
+    }
+    a {
+  		color: #809fff;
+	}
+}
+
+div.verse {
+  border: 4px solid transparent;
+  border-image: url('/images/tl-br.gif') 20 stretch;
+  padding: 4px;
+}
+div.bible {
+  border: 4px solid transparent;
+  border-image: url('/images/bl-tr.gif') 20 stretch;
+  padding: 4px;
+}
+div.right {
+    text-align: right;
+    transform: translate(0px, -10px);
+    line-height: 0.0;
+  }
+div.left {
+    text-align: left;
+    transform: translate(0px, 10px);
+    line-height: 0.0;
+  }
+* {
+    font-family: "Comic Sans MS", Arial, Helvetica, sans-serif;
+    font-size: 100%;
+  }
+p.reading {
+    text-align: right;/*
+    transform: translate(-4px, 14px);*/
+    transform: translate(0px, -10px);
+    font-size: 50%;
+    font-style: italic;
+    line-height: 0.0;
+  }
+p.author {
+    text-align: right;
+    transform: translate(0px, -10px);
+    font-size: 50%;
+    font-style: italic;
+    line-height: 0.0;
+  }
