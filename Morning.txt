@@ -33,7 +33,8 @@ H.Prayers for others
 #.U.OMS Prayers https://omstemp.curve.org.uk/en/an-oms-intercession-introduction/an-oms-intercession-abridged/
 U.OMS Prayers https://www.orderofthemustardseed.com/members/ongoing-formation/an-oms-intercession/intercession-abridged-version/
 #.U.World Watch List https://worldwatch.opendoorsuk.org/persecution/world-watch-list/
-U.World Watch List https://www.opendoorsuk.org/persecution/world-watch-list/
+#.U.World Watch List https://www.opendoorsuk.org/persecution/world-watch-list/
+I.OpenDoors
 #.U.The Prayer Shield List https://theprayershield.uk/scriptures-declarations/
 H.Canticle
 P.Jesus, as my light, illuminate and guide me.

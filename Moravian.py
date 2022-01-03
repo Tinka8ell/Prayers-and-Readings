@@ -249,41 +249,53 @@ class Moravian(WebTree):
         return
 
     def htmlReading(self, passage, f, tag=None, showdivs=False):
+        html = self.getHtmlReading(passage, tag, showdivs)
+        print(html, file=f)
+        return
+
+    def getHtmlReading(self, passage, tag=None, showdivs=False):
+        html = []
         # force no Tag:
         tag = None
         bible = BibleReading(passage, self.version)
         if tag:
-            print(tagText(passage, tag), file=f)
-            bible.htmlParas(f)
+            html.append(tagText(passage, tag))
+            html.append(bible.getHtmlParas())
         else:
-            bible.htmlParas(f, reading=True)
+            html.append(bible.getHtmlParas(reading=True))
         if showdivs:
-            print("<hr/>", file=f)
-        return
+            html.append("<hr/>")
+        return '\n'.join(html)
 
     def html(self, f, showdivs=True):
+        html = self.getHtml(showdivs)
+        print(html, file=f)
+        return
+
+    def getHtml(self, showdivs=True):
+        html = []
         if len(self.watchwords) > 0:
-            print("<h2>Watchwords</h2>", file=f)
+            html.append("<h2>Watchwords</h2>")
             for word in self.watchwords:
-                print(tagText(word[0], "h3"), file=f)
+                html.append(tagText(word[0], "h3"))
                 if word[2]:
                     passage = word[2]
-                    self.htmlReading(passage, f, tag="h4")
+                    html.append(self.getHtmlReading(passage, tag="h4"))
                 else:
-                    print(tagText(word[1], "p"), file=f)
+                    html.append(tagText(word[1], "p"))
             if showdivs:
-                print("<hr/>", file=f)
+                html.append("<hr/>")
         # print(len(self.daily), "passages")
         for passage in self.daily:
             # print(f"'{passage}'")
-            self.htmlReading(passage, f, tag="h3", showdivs=showdivs)
-        print(tagText("Prayer", "h3"), file=f)
-        paras = self.prayer.split("\n")  # incase seperate paragraphs
+            html.append(self.getHtmlReading(passage, tag="h3", showdivs=showdivs))
+        html.append(tagText("Prayer", "h3"))
+        paras = self.prayer.split("\n")  # in case separate paragraphs
         for para in paras:  # should be at least one!
-            print(tagText(para, "p"), file=f)
+            html.append(tagText(para, "p"))
         if showdivs:
-            print("<hr/>", file=f)
-        return
+            html.append("<hr/>")
+        return '\n'.join(html)
 
     def showWatchwords(self):
         if len(self.watchwords) == 0:

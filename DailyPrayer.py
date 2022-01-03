@@ -103,6 +103,8 @@ class DailyPrayer(WebTree):
                                 self.date = datetime.date()
                                 # check if showing today's date
                                 today = date.today()
+                                if self.date > today: # must be last year!
+                                    self.date = date(self.date.year - 1, self.date.month, self.date.day)
                                 self.isToday = today == datetime.date()
                                 # ## print("Date:", pageDate, datetime, self.date, self.isToday)
                             else:  # get the scripture passage
@@ -219,44 +221,56 @@ class DailyPrayer(WebTree):
         return
 
     def htmlReading(self, passage, f, tag=None, showdivs=False):
-        # override and force no Tag:
-        tag = None
-        bible = BibleReading(passage, self.version)
-        if tag:
-            print(tagText(passage, tag), file=f)
-            bible.htmlParas(f)
-        else:
-            bible.htmlParas(f, reading=True)
-        if showdivs:
-            print("<hr/>", file=f)
+        html = self.getHtmlReading(passage, tag, showdivs)
+        print(html, file=f)
         return
 
+    def getHtmlReading(self, passage, tag=None, showdivs=False):
+        # override and force no Tag:
+        tag = None
+        html = []
+        bible = BibleReading(passage, self.version)
+        if tag:
+            html.append(tagText(passage, tag))
+            html.append(bible.getHtmlParas())
+        else:
+            html.append(bible.getHtmlParas(reading=True))
+        if showdivs:
+            html.append("<hr/>")
+        return '\n'.join(html)
+
     def html(self, f, showdivs=True):
+        html = self.getHtml(showdivs)
+        print(html, file=f)
+        return
+
+    def getHtml(self, showdivs=True):
         '''
         for line in self.daily:
            print("daily:", line)
         '''
-        print(tagText(self.daily[0], "h2"), file=f)
+        html = []
+        html.append(tagText(self.daily[0], "h2"))
         for passage in self.daily[1:]:
             # print(f"'{passage}'")
-            self.htmlReading(passage, f, tag="h3", showdivs=showdivs)
+            html.append(self.getHtmlReading(passage, tag="h3", showdivs=showdivs))
         for paraType, para in self.meditation:
             # ## print("type", paraType, "para", para)
             if paraType == "H":
-                print(tagText(para, "h2"), file=f)
+                html.append(tagText(para, "h2"))
             elif paraType == "T":
-                print(tagText(para, "h3"), file=f)
+                html.append(tagText(para, "h3"))
             elif paraType == "A":
-                print(tagText(para, 'p class="author"'), file=f)
+                html.append(tagText(para, 'p class="author"'))
             else:
                 prefix = "<p>"
                 for p in para.split("\n"):
-                    print(prefix + cleanText(p, xmlReplace=True), file=f)
+                    html.append(prefix + cleanText(p, xmlReplace=True))
                     prefix = "<br/>"
-                print("</p>", file=f)
+                html.append("</p>")
         if showdivs:
-            print("<hr/>", file=f)
-        return
+            html.append("<hr/>")
+        return '\n'.join(html)
 
 
 if __name__ == "__main__":

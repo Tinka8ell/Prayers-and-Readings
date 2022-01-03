@@ -7,6 +7,12 @@
     a {
   		color: #0033cc;
 	}
+	div.verse {
+	  border-image: url('/images/tl-br.gif') 20 stretch;
+	}
+	div.bible {
+	  border-image: url('/images/bl-tr.gif') 20 stretch;
+	}
 }
 
 /* Dark mode */
@@ -18,16 +24,26 @@
     a {
   		color: #809fff;
 	}
+	div.verse {
+	  border-image: url('/images/tl-br-dark.gif') 20 stretch;
+	}
+	div.bible {
+	  border-image: url('/images/bl-tr-dark.gif') 20 stretch;
+	}
 }
 
 div.verse {
   border: 4px solid transparent;
+  /* now set by theme
   border-image: url('/images/tl-br.gif') 20 stretch;
+  */
   padding: 4px;
 }
 div.bible {
   border: 4px solid transparent;
+  /* now set by theme
   border-image: url('/images/bl-tr.gif') 20 stretch;
+  */
   padding: 4px;
 }
 div.right {
