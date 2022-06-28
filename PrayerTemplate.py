@@ -57,7 +57,7 @@ class PrayerTemplate():
         parent = directory  # keep finger on parent
         name = self.name
         filename = os.path.join(directory, name + ".txt")
-        self.tempateDate = datetime.fromtimestamp(os.path.getmtime(filename)) # get a date for template last update
+        self.templateDate = datetime.fromtimestamp(os.path.getmtime(filename)) # get a date for template last update
         with open(filename, 'r', encoding="utf-8") as f:
             line = f.readline()
             while line:
@@ -174,7 +174,7 @@ class PrayerTemplate():
         return documentDate
 
     def getHtml(self):
-        documentDate = self.tempateDate # start with the age of the template
+        documentDate = self.templateDate # start with the age of the template
         html = []
         html.append(self.p1)
         html.append(self.title)
