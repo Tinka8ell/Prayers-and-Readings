@@ -63,7 +63,7 @@ class Moravian(WebTree):
             self.date = date(year=2020, month=1, day=1)
         # check if showing today's date
         today = date.today()
-        self.isToday = today == self.date
+        self.isToday = today.day == self.date.day
         # get first para of next div
         nextP = textwidget.div.p
         # work through each pars to see what it is
@@ -271,6 +271,9 @@ class Moravian(WebTree):
         html = self.getHtml(showdivs)
         print(html, file=f)
         return
+
+    def getDate(self):
+        return self.date
 
     def getHtml(self, showdivs=True):
         html = []

@@ -137,8 +137,10 @@ class PrayerTemplate():
 
     def html(self, directory=None):
         filename, parent = self.getFilename(directory)
+        print("Creating html: filename =", filename)
         html = self.getHtml()
         # only create new version if it really is new ...
+        print("Creating html: oldDocumentDate =", self.oldDocumentDate, ", documentDate =", self.documentDate)
         if self.oldDocumentDate < self.documentDate:
             # use the new one
             ### print("Writing ", filename, self.oldDocumentDate , self.documentDate)
@@ -148,8 +150,11 @@ class PrayerTemplate():
             if os.name == 'posix':
                 # point symbolic link to file created:
                 symbolic = os.path.join(parent, self.name + ".html")
+                print("Creating symbolic link: symbolic =", symbolic)
                 filename = Path(filename)
+                print("Creating symbolic link: filename =", filename)
                 symbolic = Path(symbolic)
+                print("Creating symbolic link: symbolic =", symbolic)
                 if symbolic.exists():
                     os.unlink(symbolic)
                 os.symlink(filename, symbolic)
@@ -158,23 +163,22 @@ class PrayerTemplate():
             pass
         return
 
-    def getDocumentDate(self, documentDate, insert):
+    def updateDocumentDate(self, newDate):
         # start with date objects
-        newDate = insert.date
-        ### print("getDocumentDate:", documentDate, newDate)
+        ### print("updateDocumentDate:", documentDate, newDate)
         now = datetime.today().date()
-        if now > newDate: # so not from today
+        if now.day != newDate.day: # so not from today
             ### print("now > newDate:", now, newDate)
             # now work with datetime objects
-            newDate = date.combine(newDate, time()) # start of newDate
-            if documentDate > newDate: # if older than previous date
+            newDatetime = datetime.combine(newDate, time()) # start of newDate as time() is 0:00:00!
+            if self.documentDate > newDatetime: # if older than current document date
                 ### print("documentDate > newDate:", documentDate, newDate)
-                documentDate = newDate
-        ### print("getDocumentDate returns:", documentDate)
-        return documentDate
+                self.documentDate = newDatetime
+        ### print("updateDocumentDate sets:", documentDate)
+        return
 
     def getHtml(self):
-        documentDate = self.templateDate # start with the age of the template
+        self.documentDate = self.templateDate # start with the age of the template
         html = []
         html.append(self.p1)
         html.append(self.title)
@@ -230,17 +234,17 @@ class PrayerTemplate():
                 html.append(self.closeTag())
                 if para == "Moravian":
                     insert = Moravian(self.moravian, version=self.version)
-                    documentDate = self.getDocumentDate(documentDate, insert)
+                    self.updateDocumentDate(insert.getDate())
                     # print("Moravian:", insert.show())
                     html.append(insert.getHtml(showdivs=False))
                 elif para == "Northumbrian":
                     insert = DailyPrayer(self.northumbrian, version=self.version)
-                    documentDate = self.getDocumentDate(documentDate, insert)
+                    self.updateDocumentDate(insert.getDate())
                     # print("DailyPrayer:", insert.show())
                     html.append(insert.getHtml(showdivs=False))
                 elif para == "OpenDoors":
                     insert = OpenDoors(self.opendoors)
-                    documentDate = self.getDocumentDate(documentDate, insert)
+                    self.updateDocumentDate(insert.getDate())
                     # print("DailyPrayer:", insert.show())
                     html.append(insert.getHtml(showdivs=False))
             else:
@@ -248,10 +252,9 @@ class PrayerTemplate():
         html.append(self.closeTag())
         html.append(self.p3)
         # insert document date
-        self.documentDate = documentDate
         pos, index = fileDatePos
         # set this document's date
-        html[pos] = html[pos][:index] + documentDate.isoformat() + html[pos][index:]
+        html[pos] = html[pos][:index] + self.documentDate.isoformat() + html[pos][index:]
         return '\n'.join(html)
 
 

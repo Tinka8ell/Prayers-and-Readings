@@ -137,6 +137,9 @@ class OpenDoors(WebTree):
             self.content.append(text)
         return
 
+    def getDate(self):
+        return self.date
+
     def getHtml(self, showdivs=True):
         html = []
         html.append(tagText("Open Doors World Watch List", "h2"))

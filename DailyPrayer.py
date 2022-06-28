@@ -103,9 +103,7 @@ class DailyPrayer(WebTree):
                                 self.date = datetime.date()
                                 # check if showing today's date
                                 today = date.today()
-                                if self.date > today: # must be last year!
-                                    self.date = date(self.date.year - 1, self.date.month, self.date.day)
-                                self.isToday = today == datetime.date()
+                                self.isToday = today.day == datetime.date().day
                                 # ## print("Date:", pageDate, datetime, self.date, self.isToday)
                             else:  # get the scripture passage
                                 # print(indent, "Scripture:", text)
@@ -243,6 +241,9 @@ class DailyPrayer(WebTree):
         html = self.getHtml(showdivs)
         print(html, file=f)
         return
+
+    def getDate(self):
+        return self.date
 
     def getHtml(self, showdivs=True):
         '''
