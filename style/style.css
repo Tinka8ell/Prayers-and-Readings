@@ -8,9 +8,11 @@
   		color: #0033cc;
 	}
 	div.verse {
+  	  border: 4px solid transparent;
 	  border-image: url('/images/tl-br.gif') 20 stretch;
 	}
 	div.bible {
+  	  border: 4px solid transparent;
 	  border-image: url('/images/bl-tr.gif') 20 stretch;
 	}
 }
@@ -25,23 +27,25 @@
   		color: #809fff;
 	}
 	div.verse {
+  	  border: 4px solid transparent;
 	  border-image: url('/images/tl-br-dark.gif') 20 stretch;
 	}
 	div.bible {
+  	  border: 4px solid transparent;
 	  border-image: url('/images/bl-tr-dark.gif') 20 stretch;
 	}
 }
 
 div.verse {
-  border: 4px solid transparent;
   /* now set by theme
+  border: 4px solid transparent;
   border-image: url('/images/tl-br.gif') 20 stretch;
   */
   padding: 4px;
 }
 div.bible {
-  border: 4px solid transparent;
   /* now set by theme
+  border: 4px solid transparent;
   border-image: url('/images/bl-tr.gif') 20 stretch;
   */
   padding: 4px;
