@@ -1,11 +1,12 @@
 lcd "C:\Users\marki\git\Prayers-and-Readings"
 cd /home/pi/Prayers
-put *.py
-put *.ico
-put *.txt
+put src/*.py
+put favicon.ico
+put templates/*.txt
 cd /var/www/html
 put *.html
-lcd "style"
-cd style
-put *.css
+cd /var/www/html/style
+put style/*.css
+cd /var/www/html/images
+put images/*.gif
 exit
