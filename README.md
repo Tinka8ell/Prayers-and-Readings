@@ -12,3 +12,5 @@ with fixed prayers and text "translated" into more contemporary english
 and replacing as much as possible with the bible quotes they come from.
 
 Forms the basis of my Daily Office.
+
+Adding Jenkins Pipeline ...
