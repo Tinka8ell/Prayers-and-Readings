@@ -53,6 +53,7 @@ class WebTree:
             g = f.read().decode('utf-8')
         # generate element tree
         root = BeautifulSoup(g, 'html.parser')
+        print("***** Pretty *****\n", root.prettify())
         return root
 
     def parse(self):
