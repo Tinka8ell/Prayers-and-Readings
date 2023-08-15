@@ -25,8 +25,8 @@ class WebTree:
 
     def __init__(self, url, values=None):
         # unknown if this is used or not or even why it is here ...
-        self.directory = "/var/www/html"
-        self.prefix = "http://piweb/"
+        # self.directory = "/var/www/html"
+        # self.prefix = "http://piweb/"
         # known code ...
         self.url = url
         self.values = values
@@ -53,7 +53,7 @@ class WebTree:
             g = f.read().decode('utf-8')
         # generate element tree
         root = BeautifulSoup(g, 'html.parser')
-        print("***** Pretty *****\n", root.prettify())
+        # print("***** Pretty *****\n", root.prettify())
         return root
 
     def parse(self):
