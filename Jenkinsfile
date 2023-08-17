@@ -29,7 +29,9 @@ pipeline {
             steps {
                 dir(path: env.BUILD_ID) { 
                     unstash(name: 'compiled-results') 
-                    sh "rm src/test_*"
+                    sh "ls -l src/"
+                    sh "rm -f src/test*"
+                    sh "ls -l src/"
                     sh "cd src && zip python-${env.BUILD_ID} *.py*"
                 }
             }
