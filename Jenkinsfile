@@ -1,21 +1,35 @@
 pipeline {
-    agent none
+    agent { docker { image 'python3' } }
     options {
         skipStagesAfterUnstable()
     }
+
     stages {
-        stage('Build') {
-            agent { docker { image 'python3' } }
+        stage('Make Virtual Env') {
             steps {
-                sh 'python -m py_compile src/*.py'
-                stash(name: 'compiled-results', includes: 'src/*.py*')
+                withPythonEnv('Python3') {
+                    sh 'pip install -r requirements.txt'
+                }
+            }
+        }
+        stage('Build') {
+            steps {
+                dir('./') {
+                    withPythonEnv('Python3') {
+                        sh 'python -m py_compile src/*.py'
+                        stash(name: 'compiled-results', includes: 'src/*.py*')
+                    }
+                }
             }
         }
         stage('Test') {
-            agent { docker { image 'python3' } }
             steps {
-                sh "pip install -r requirements.txt"
-                sh 'py.test --junit-xml test-reports/results.xml src/test*.py'
+                dir('./') {
+                    withPythonEnv('Python3') {
+                        sh "python3 -m pytest"
+                        sh 'py.test --junit-xml test-reports/results.xml src/test*.py'
+                    }
+                }
             }
             post {
                 always {
@@ -24,7 +38,6 @@ pipeline {
             }
         }
         stage('Deliver') { 
-            agent any
             steps {
                 dir(path: env.BUILD_ID) { 
                     unstash(name: 'compiled-results') 
