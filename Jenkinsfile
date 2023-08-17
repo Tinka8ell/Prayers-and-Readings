@@ -1,38 +1,20 @@
 pipeline {
-    agent { docker { image 'python3' } }
+    agent { dockerfile true }
     options {
         skipStagesAfterUnstable()
     }
 
     stages {
-        stage('Make Virtual Env') {
-            steps {
-                sh "mkdir -p python/python"
-                dir('./') {
-                    withPythonEnv('python') {
-                        sh 'pip install -r requirements.txt'
-                    }
-                }
-            }
-        }
         stage('Build') {
             steps {
-                dir('./') {
-                    withPythonEnv('python') {
-                        sh 'python -m py_compile src/*.py'
-                        stash(name: 'compiled-results', includes: 'src/*.py*')
-                    }
-                }
+                sh 'python -m py_compile src/*.py'
+                stash(name: 'compiled-results', includes: 'src/*.py*')
             }
         }
         stage('Test') {
             steps {
-                dir('./') {
-                    withPythonEnv('python') {
-                        sh "python3 -m pytest"
-                        sh 'py.test --junit-xml test-reports/results.xml src/test*.py'
-                    }
-                }
+                sh "python3 -m pytest"
+                sh 'py.test --junit-xml test-reports/results.xml src/test*.py'
             }
             post {
                 always {
