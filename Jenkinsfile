@@ -14,6 +14,7 @@ pipeline {
         stage('Test') {
             agent { docker { image 'python3' } }
             steps {
+                sh "pip install -r requirements.txt"
                 sh 'py.test --junit-xml test-reports/results.xml src/test*.py'
             }
             post {
