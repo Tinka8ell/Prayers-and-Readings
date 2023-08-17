@@ -14,6 +14,8 @@ pipeline {
         stage('Test') {
             agent { docker { image 'python3' } }
             steps {
+                sh "ls -l"
+                sh "ls -l src"
                 sh 'py.test --junit-xml test-reports/results.xml src/test_*.py'
             }
             post {
