@@ -7,6 +7,7 @@ pipeline {
     stages {
         stage('Make Virtual Env') {
             steps {
+                sh "mkdir -p PnR/python"
                 dir('./') {
                     withPythonEnv('PnR') {
                         sh 'pip install -r requirements.txt'
