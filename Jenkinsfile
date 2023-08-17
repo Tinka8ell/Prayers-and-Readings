@@ -7,15 +7,17 @@ pipeline {
     stages {
         stage('Make Virtual Env') {
             steps {
-                withPythonEnv('Python3') {
-                    sh 'pip install -r requirements.txt'
+                dir('./') {
+                    withPythonEnv('P&R') {
+                        sh 'pip install -r requirements.txt'
+                    }
                 }
             }
         }
         stage('Build') {
             steps {
                 dir('./') {
-                    withPythonEnv('Python3') {
+                    withPythonEnv('P&R') {
                         sh 'python -m py_compile src/*.py'
                         stash(name: 'compiled-results', includes: 'src/*.py*')
                     }
@@ -25,7 +27,7 @@ pipeline {
         stage('Test') {
             steps {
                 dir('./') {
-                    withPythonEnv('Python3') {
+                    withPythonEnv('P&R') {
                         sh "python3 -m pytest"
                         sh 'py.test --junit-xml test-reports/results.xml src/test*.py'
                     }
