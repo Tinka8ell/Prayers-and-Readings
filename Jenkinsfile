@@ -1,5 +1,6 @@
 pipeline {
     agent { dockerfile true }
+
     options {
         skipStagesAfterUnstable()
     }
@@ -11,6 +12,7 @@ pipeline {
                 stash(name: 'compiled-results', includes: 'src/*.py*')
             }
         }
+
         stage('Test') {
             steps {
                 sh "python3 -m pytest"
@@ -22,6 +24,7 @@ pipeline {
                 }
             }
         }
+
         stage('Deliver') { 
             steps {
                 dir(path: env.BUILD_ID) { 
