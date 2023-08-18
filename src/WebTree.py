@@ -23,7 +23,7 @@ class WebTree:
     to be sent as parameters on the HTTP GET. 
     """
 
-    def __init__(self, url, values=None):
+    def __init__(self, url, values=None, output=None):
         # unknown if this is used or not or even why it is here ...
         # self.directory = "/var/www/html"
         # self.prefix = "http://piweb/"
@@ -36,7 +36,10 @@ class WebTree:
             self.data = data.encode('utf-8')  # data should be bytes
         self.root = None
         self.root = self.read() # root of the tree
-        self.parse() # use the overrideable parse() method to process it. 
+        if output:
+            with open(output, 'w') as f:
+                f.write(self.root.prettify())
+        self.parse() # use the overrideable parse() method to process it.
         return
 
     def read(self):
