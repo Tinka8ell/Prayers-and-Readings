@@ -49,7 +49,7 @@ class TestWebTree(unittest.TestCase):
             written = ""
             with open(name, 'r') as f:
                 written = f.readlines()
-            self.assertNotEqual("".join(written), testResult)
+            self.assertEqual("".join(written), testResult)
 
 if __name__ == '__main__':
     unittest.main()
