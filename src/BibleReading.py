@@ -197,13 +197,22 @@ if __name__ == "__main__":
     print(text, re.sub(r"(\w)\s+([!\"()-;:'.,?])", r"\1\2", text))
     '''
     '''
-    bible = BibleReading("Psalm 147:2â€“3", version="NLT")
+    bible = BibleReading("Psalm 147:2,3", version="NLT")
     bible.showPassage()
     print()
     bible.htmlParas(None)
     print()
     bible.show()
     '''
+    '''
     for i in range(1, 9):
         bible = BibleReading("song " + str(i), version="NLT")
         print(bible.getHtmlParas(reading=True))
+    '''
+
+    version="NLT"
+    reading = "song 1"
+    url = "https://www.biblegateway.com/passage/"
+    values = {"search": reading, "version": version}
+    tree = WebTree(url=url, values=values, output="song1.txt")
+
