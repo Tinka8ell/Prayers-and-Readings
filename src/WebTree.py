@@ -73,5 +73,13 @@ class WebTree:
 
 if __name__ == "__main__":
     # simple test of a known source page
+    """
     tree = WebTree("https://www.moravian.org/the-daily-texts/")
     tree.show()
+    """
+    # get some data:
+    version = "NIVUK"
+    reading = "song 1"
+    url = "https://www.biblegateway.com/passage/"
+    values = {"search": reading, "version": version}
+    tree = WebTree(url=url, values=values, output="song1.txt")

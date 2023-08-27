@@ -1,74 +1,74 @@
-key,number,chapters,apocrypha,full
-gen,,50,,Genesis
-exo,,40,,Exodus
-lev,,27,,Leviticus
-num,,36,,Numbers
-deu,,34,,Deuteronomy
-jos,,24,,Joshua
-jud,,21,,Judges
-rut,,4,,Ruth
-sam,1,31,,1 Samuel
-sam,2,24,,2 Samuel
-kin,1,22,,1 Kings
-kin,2,25,,2 Kings
-chr,1,29,,1 Chronicles
-chr,2,36,,2 Chronicles
-ezr,,10,,Ezra
-neh,,13,,Nehemiah
-tob,,14,*,Tobit
-jud,,16,*,Judith
-est,,10,,Esther
-mac,1,16,*,1 Maccabees
-mac,2,15,*,2 Maccabees
-job,,42,,Job
-psa,,150,,Psalms
-pro,,31,,Proverbs
-ecc,,12,,Ecclesiastes
-son,,8,,Song of Songs
-wis,,19,*,Wisdom
-sir,,51,*,Sirach
-isa,,66,,Isaiah
-jer,,52,,Jeremiah
-lam,,5,,Lamentations
-bar,,6,*,Baruch
-eze,,48,,Ezekiel
-dan,,14,,Daniel
-hos,,14,,Hosea
-joe,,4,,Joel
-amo,,9,,Amos
-oba,,1,,Obadiah
-jon,,4,,Jonah
-mic,,7,,Micah
-nah,,3,,Nahum
-hab,,3,,Habakkuk
-zep,,3,,Zephaniah
-hag,,2,,Haggai
-zec,,14,,Zechariah
-mal,,3,,Malachi
-mat,,28,,Matthew
-mar,,16,,Mark
-luk,,24,,Luke
-joh,,21,,John
-act,,28,,Acts
-rom,,16,,Romans
-cor,1,16,,1 Corinthians
-cor,2,13,,2 Corinthians
-gal,,6,,Galatians
-eph,,6,,Ephesians
-phi,,4,,Philippians
-col,,4,,Colossians
-the,1,5,,1 Thessalonians
-the,2,3,,2 Thessalonians
-tim,1,6,,1 Timothy
-tim,2,4,,2 Timothy
-tit,,3,,Titus
-phi,,1,,Philemon
-heb,,13,,Hebrews
-jam,,5,,James
-pet,1,5,,1 Peter
-pet,2,3,,2 Peter
-joh,1,5,,1 John
-joh,2,1,,2 John
-joh,3,1,,3 John
-jud,,1,,Jude
-rev,,22,,Revelation
+order,key,number,chapters,apocrypha,full
+01,gen,,50,,Genesis
+02,exo,,40,,Exodus
+03,lev,,27,,Leviticus
+04,num,,36,,Numbers
+05,deu,,34,,Deuteronomy
+06,jos,,24,,Joshua
+07,jud,,21,,Judges
+08,rut,,4,,Ruth
+09,sam,1,31,,1 Samuel
+10,sam,2,24,,2 Samuel
+11,kin,1,22,,1 Kings
+12,kin,2,25,,2 Kings
+13,chr,1,29,,1 Chronicles
+14,chr,2,36,,2 Chronicles
+15,ezr,,10,,Ezra
+16,neh,,13,,Nehemiah
+17,tob,,14,true,Tobit
+18,jud,,16,true,Judith
+19,est,,10,,Esther
+20,mac,1,16,true,1 Maccabees
+21,mac,2,15,true,2 Maccabees
+22,job,,42,,Job
+23,psa,,150,,Psalms
+24,pro,,31,,Proverbs
+25,ecc,,12,,Ecclesiastes
+26,son,,8,,Song of Songs
+27,wis,,19,true,Wisdom
+28,sir,,51,true,Sirach
+29,isa,,66,,Isaiah
+30,jer,,52,,Jeremiah
+31,lam,,5,,Lamentations
+32,bar,,6,true,Baruch
+33,eze,,48,,Ezekiel
+34,dan,,14,,Daniel
+35,hos,,14,,Hosea
+36,joe,,4,,Joel
+37,amo,,9,,Amos
+38,oba,,1,,Obadiah
+39,jon,,4,,Jonah
+40,mic,,7,,Micah
+41,nah,,3,,Nahum
+42,hab,,3,,Habakkuk
+43,zep,,3,,Zephaniah
+44,hag,,2,,Haggai
+45,zec,,14,,Zechariah
+46,mal,,3,,Malachi
+47,mat,,28,,Matthew
+48,mar,,16,,Mark
+49,luk,,24,,Luke
+50,joh,,21,,John
+51,act,,28,,Acts
+52,rom,,16,,Romans
+53,cor,1,16,,1 Corinthians
+54,cor,2,13,,2 Corinthians
+55,gal,,6,,Galatians
+56,eph,,6,,Ephesians
+57,phi,,4,,Philippians
+58,col,,4,,Colossians
+59,the,1,5,,1 Thessalonians
+60,the,2,3,,2 Thessalonians
+61,tim,1,6,,1 Timothy
+62,tim,2,4,,2 Timothy
+63,tit,,3,,Titus
+64,phi,,1,,Philemon
+65,heb,,13,,Hebrews
+66,jam,,5,,James
+67,pet,1,5,,1 Peter
+68,pet,2,3,,2 Peter
+69,joh,1,5,,1 John
+70,joh,2,1,,2 John
+71,joh,3,1,,3 John
+72,jud,,1,,Jude
+73,rev,,22,,Revelation
