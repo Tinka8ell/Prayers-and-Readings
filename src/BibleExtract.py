@@ -89,6 +89,9 @@ def flattenSection(passage, section, class_=None):
         div = passage.find(section, class_=class_)
     return
 
+def isSpecial(name, nameTest, attributes, attributesTest):
+    return name == nameTest and attributes.find(attributesTest) >= 0
+
 
 class BibleExtract(WebTree):
     """
@@ -136,7 +139,7 @@ class BibleExtract(WebTree):
             removeSection(passage, "h3") # the added headings, but h4 used as extra info (not has headings)
             removeSection(passage, ["sup", "span"], ["chapternum", "footnote"])
             flattenSection(passage, "div", ["passage-text", "passage-content", "text-html"])
-            flattenSection(passage, "span", "text")
+            flattenSection(passage, "span", ["text", "woj", "chapter-1", "indent-1-breaks"])#, "indent-1"])
 
             self.decompress(passage, "")
         #     # May need to review why we do this as paragraphs!
@@ -162,10 +165,11 @@ class BibleExtract(WebTree):
         # self.paras = paras
         return
     
-    def decompress(self, passage, prefix):
+    def decompress(self, passage, prefix, poetry=""):
         if passage.name:
             attributes =  ""
-            if passage.attrs:
+            nextPoetry = poetry
+            if passage.name != "p" and passage.attrs:
                 for attr in passage.attrs.keys():
                     value = passage.attrs[attr]
                     if isinstance(value, (list, tuple)):
@@ -173,37 +177,44 @@ class BibleExtract(WebTree):
                     attributes += ", " + attr + ": " + value
                 if len(attributes) > 1:
                     attributes = attributes[1:] # remove the leading ','
-            if passage.name == "sup" and attributes.strip().startswith("class: versenum"):
-                # or "class: versenum, mid-line" ...
-                # special case
-                verse = ""
-                for string in passage.stripped_strings:
-                    string = string.strip()
-                    verse += " " + string
-                verse = verse.strip()
-                if len(verse) > 0:
-                    self.paras.append(prefix + ".verse: " + verse)
+            if isSpecial(passage.name, "sup", attributes, "class: versenum"):
+                self.doSpecial(passage, "verse", prefix)
+            elif isSpecial(passage.name, "span", attributes, "class: selah"):
+                self.doSpecial(passage, "selah", prefix)
+            elif isSpecial(passage.name, "span", attributes, "class: small-caps"):
+                self.doSpecial(passage, "lord", prefix)
             else:
                 children = passage.children
-                self.paras.append(prefix + "." + passage.name + attributes)
-                lastPara = len(self.paras)
-                for child in children:
-                    self.decompress(child, self.indent + prefix)
-                if lastPara == len(self.paras):
-                    # no children
-                    self.paras[lastPara - 1] = self.paras[lastPara - 1].replace(".", "./")
+                if attributes.find("poetry") >= 0:
+                    nextPoetry = "1"
+                elif attributes.find("indent-1") >= 0: # very common
+                    nextPoetry = "2"
+                elif attributes.find("indent-2") >= 0: # have seen this
+                    nextPoetry = "3"
+                elif attributes.find("indent-3") >= 0: # probably overkill!
+                    nextPoetry = "4"
                 else:
-                    self.paras.append(prefix + "." + passage.name + "/" + attributes)
+                    self.paras.append(prefix + "." + passage.name + attributes)
+                # lastPara = len(self.paras)
+                for child in children:
+                    self.decompress(child, self.indent + prefix, nextPoetry)
+                # if lastPara == len(self.paras):
+                #     # no children
+                #     self.paras[lastPara - 1] = self.paras[lastPara - 1].replace(".", "./")
+                # else:
+                #     self.paras.append(prefix + "." + passage.name + "/" + attributes)
         else:
-            text = ""
-            for string in passage.stripped_strings:
-                string = string.strip()
-                text += " " + string
-            text = text.strip()
-            if len(text) > 0:
-                self.paras.append(prefix + ".text: " + text)
+            self.doSpecial(passage, "text", prefix, poetry)
         return
-
+    
+    def doSpecial(self, passage, tag, prefix="", poetry=""):
+        text = ""
+        for string in passage.stripped_strings:
+            string = string.strip()
+            text += " " + string
+        text = text.strip()
+        if len(text) > 0:
+            self.paras.append(prefix + "." + tag + poetry + ": " + text)
 
     def show(self):
         """
@@ -276,9 +287,21 @@ if __name__ == "__main__":
     print()
     bible.show()
     '''
-    #reduced to 1 chapter from 9 for now!
-    for i in range(3, 4):
-        print("BibleExtract(\"" + "song " + str(i) + "\", version=\"NLT\")")
-        bible = BibleExtract("john " + str(i), version="NLT")
-        bible.show()
-        # print(bible.getHtmlParas(reading=True))
+    '''
+    book = "john"
+    version = "NLT"
+    chapter = 1
+
+    book = "psalm"
+    version = "NLT"
+    chapter = 3
+    '''
+    
+    book = "phil"
+    version = "NIVUK"
+    chapter = 2
+    
+    reference = book + " " + str(chapter)
+    print("BibleExtract(\"" + reference + "\", version=\"" + version + "\")")
+    bible = BibleExtract(reference, version=version)
+    bible.show()
