@@ -169,7 +169,7 @@ class BibleExtract(WebTree):
         if passage.name:
             attributes =  ""
             nextPoetry = poetry
-            if passage.name != "p" and passage.attrs:
+            if passage.name != "p" and passage.name != "h4" and passage.attrs:
                 for attr in passage.attrs.keys():
                     value = passage.attrs[attr]
                     if isinstance(value, (list, tuple)):
@@ -287,21 +287,16 @@ if __name__ == "__main__":
     print()
     bible.show()
     '''
-    '''
-    book = "john"
-    version = "NLT"
-    chapter = 1
-
-    book = "psalm"
-    version = "NLT"
-    chapter = 3
-    '''
+    def testIt(book, chapter, version):
+        reference = book + " " + str(chapter)
+        print("BibleExtract(\"" + reference + "\", version=\"" + version + "\")")
+        bible = BibleExtract(reference, version=version)
+        bible.show()
+        
+    # testIt("john", 1, "NLT")
+    # testIt("psalm", 3, "NLT")
+    testIt("psalm", 3, "NIVUK")
+    # testIt("phil", 2, "NIVUK")
+    # testIt("song", 1, "NLT")
+    # testIt("song", 1, "NIVUK")
     
-    book = "phil"
-    version = "NIVUK"
-    chapter = 2
-    
-    reference = book + " " + str(chapter)
-    print("BibleExtract(\"" + reference + "\", version=\"" + version + "\")")
-    bible = BibleExtract(reference, version=version)
-    bible.show()
