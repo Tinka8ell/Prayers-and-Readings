@@ -1,0 +1,452 @@
+<div class="passage-text">
+ <div class="passage-content passage-class-0">
+  <div class="version-NLT result-text-style-normal text-html">
+   <h3>
+    <span class="text Ps-7-1" id="en-NLT-13973">
+     Psalm 7
+    </span>
+   </h3>
+   <h4 class="psalm-title">
+    <span class="text Ps-7-1">
+     A psalm
+     <sup class="footnote" data-fn="#fen-NLT-13973a" data-link='[&lt;a href="#fen-NLT-13973a" title="See footnote a"&gt;a&lt;/a&gt;]'>
+      [
+      <a href="#fen-NLT-13973a" title="See footnote a">
+       a
+      </a>
+      ]
+     </sup>
+     of David, which he sang to the
+     <span class="small-caps" style="font-variant: small-caps">
+      Lord
+     </span>
+     concerning Cush of the tribe of Benjamin.
+    </span>
+   </h4>
+   <div class="poetry top-1">
+    <p class="line">
+     <span class="text Ps-7-1">
+      <sup class="versenum">
+       1
+      </sup>
+      I come to you for protection, O
+      <span class="small-caps" style="font-variant: small-caps">
+       Lord
+      </span>
+      my God.
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-1">
+       Save me from my persecutors—rescue me!
+      </span>
+     </span>
+     <br/>
+     <span class="text Ps-7-2" id="en-NLT-13974">
+      <sup class="versenum">
+       2
+      </sup>
+      If you don’t, they will maul me like a lion,
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-2">
+       tearing me to pieces with no one to rescue me.
+      </span>
+     </span>
+     <br/>
+     <span class="text Ps-7-3" id="en-NLT-13975">
+      <sup class="versenum">
+       3
+      </sup>
+      O
+      <span class="small-caps" style="font-variant: small-caps">
+       Lord
+      </span>
+      my God, if I have done wrong
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-3">
+       or am guilty of injustice,
+      </span>
+     </span>
+     <br/>
+     <span class="text Ps-7-4" id="en-NLT-13976">
+      <sup class="versenum">
+       4
+      </sup>
+      if I have betrayed a friend
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-4">
+       or plundered my enemy without cause,
+      </span>
+     </span>
+     <br/>
+     <span class="text Ps-7-5" id="en-NLT-13977">
+      <sup class="versenum">
+       5
+      </sup>
+      then let my enemies capture me.
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-5">
+       Let them trample me into the ground
+      </span>
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-5">
+       and drag my honor in the dust.
+       <span class="selah">
+        Interlude
+       </span>
+      </span>
+     </span>
+    </p>
+   </div>
+   <div class="poetry top-1">
+    <p class="line">
+     <span class="text Ps-7-6" id="en-NLT-13978">
+      <sup class="versenum">
+       6
+      </sup>
+      Arise, O
+      <span class="small-caps" style="font-variant: small-caps">
+       Lord
+      </span>
+      , in anger!
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-6">
+       Stand up against the fury of my enemies!
+      </span>
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-6">
+       Wake up, my God, and bring justice!
+      </span>
+     </span>
+     <br/>
+     <span class="text Ps-7-7" id="en-NLT-13979">
+      <sup class="versenum">
+       7
+      </sup>
+      Gather the nations before you.
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-7">
+       Rule over them from on high.
+      </span>
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="text Ps-7-8" id="en-NLT-13980">
+       <sup class="versenum">
+        8
+       </sup>
+       <span class="indent-1-breaks">
+       </span>
+       The
+       <span class="small-caps" style="font-variant: small-caps">
+        Lord
+       </span>
+       judges the nations.
+      </span>
+     </span>
+     <br/>
+     <span class="text Ps-7-8">
+      Declare me righteous, O
+      <span class="small-caps" style="font-variant: small-caps">
+       Lord
+      </span>
+      ,
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-8">
+       for I am innocent, O Most High!
+      </span>
+     </span>
+     <br/>
+     <span class="text Ps-7-9" id="en-NLT-13981">
+      <sup class="versenum">
+       9
+      </sup>
+      End the evil of those who are wicked,
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-9">
+       and defend the righteous.
+      </span>
+     </span>
+     <br/>
+     <span class="text Ps-7-9">
+      For you look deep within the mind and heart,
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-9">
+       O righteous God.
+      </span>
+     </span>
+    </p>
+   </div>
+   <div class="poetry top-1">
+    <p class="line">
+     <span class="text Ps-7-10" id="en-NLT-13982">
+      <sup class="versenum">
+       10
+      </sup>
+      God is my shield,
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-10">
+       saving those whose hearts are true and right.
+      </span>
+     </span>
+     <br/>
+     <span class="text Ps-7-11" id="en-NLT-13983">
+      <sup class="versenum">
+       11
+      </sup>
+      God is an honest judge.
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-11">
+       He is angry with the wicked every day.
+      </span>
+     </span>
+    </p>
+   </div>
+   <div class="poetry top-1">
+    <p class="line">
+     <span class="text Ps-7-12" id="en-NLT-13984">
+      <sup class="versenum">
+       12
+      </sup>
+      If a person does not repent,
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-12">
+       God
+       <sup class="footnote" data-fn="#fen-NLT-13984b" data-link='[&lt;a href="#fen-NLT-13984b" title="See footnote b"&gt;b&lt;/a&gt;]'>
+        [
+        <a href="#fen-NLT-13984b" title="See footnote b">
+         b
+        </a>
+        ]
+       </sup>
+       will sharpen his sword;
+      </span>
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-12">
+       he will bend and string his bow.
+      </span>
+     </span>
+     <br/>
+     <span class="text Ps-7-13" id="en-NLT-13985">
+      <sup class="versenum">
+       13
+      </sup>
+      He will prepare his deadly weapons
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-13">
+       and shoot his flaming arrows.
+      </span>
+     </span>
+    </p>
+   </div>
+   <div class="poetry top-1">
+    <p class="line">
+     <span class="text Ps-7-14" id="en-NLT-13986">
+      <sup class="versenum">
+       14
+      </sup>
+      The wicked conceive evil;
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-14">
+       they are pregnant with trouble
+      </span>
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-14">
+       and give birth to lies.
+      </span>
+     </span>
+     <br/>
+     <span class="text Ps-7-15" id="en-NLT-13987">
+      <sup class="versenum">
+       15
+      </sup>
+      They dig a deep pit to trap others,
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-15">
+       then fall into it themselves.
+      </span>
+     </span>
+     <br/>
+     <span class="text Ps-7-16" id="en-NLT-13988">
+      <sup class="versenum">
+       16
+      </sup>
+      The trouble they make for others backfires on them.
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-16">
+       The violence they plan falls on their own heads.
+      </span>
+     </span>
+    </p>
+   </div>
+   <div class="poetry top-1">
+    <p class="line">
+     <span class="text Ps-7-17" id="en-NLT-13989">
+      <sup class="versenum">
+       17
+      </sup>
+      I will thank the
+      <span class="small-caps" style="font-variant: small-caps">
+       Lord
+      </span>
+      because he is just;
+     </span>
+     <br/>
+     <span class="indent-1">
+      <span class="indent-1-breaks">
+      </span>
+      <span class="text Ps-7-17">
+       I will sing praise to the name of the
+       <span class="small-caps" style="font-variant: small-caps">
+        Lord
+       </span>
+       Most High.
+      </span>
+     </span>
+    </p>
+   </div>
+   <div class="footnotes">
+    <h4>
+     Footnotes
+    </h4>
+    <ol>
+     <li id="fen-NLT-13973a">
+      <a href="#en-NLT-13973" title="Go to Psalm 7:1">
+       7:Title
+      </a>
+      <span class="footnote-text">
+       Hebrew
+       <i>
+        A shiggaion,
+       </i>
+       probably indicating a musical setting for the psalm.
+      </span>
+     </li>
+     <li id="fen-NLT-13984b">
+      <a href="#en-NLT-13984" title="Go to Psalm 7:12">
+       7:12
+      </a>
+      <span class="footnote-text">
+       Hebrew
+       <i>
+        he.
+       </i>
+      </span>
+     </li>
+    </ol>
+   </div>
+   <!--end of footnotes-->
+  </div>
+ </div>
+</div>
+<div class="copyright-table">
+ <div class="copyright-table-content flex-7">
+  <div class="publisher-info-bottom with-bga">
+   <strong>
+    <a href="/versions/New-Living-Translation-NLT-Bible/">
+     New Living Translation
+    </a>
+    (NLT)
+   </strong>
+   <p>
+    <em>
+     Holy Bible
+    </em>
+    , New Living Translation, copyright © 1996, 2004, 2015 by Tyndale House Foundation. Used by permission of
+    <a href="http://www.tyndale.com">
+     Tyndale House Publishers, Inc.
+    </a>
+    , Carol Stream, Illinois 60188. All rights reserved.
+   </p>
+   <br/>
+   <div class="bga-copyright-multi">
+    <a href="https://www.tyndale.com/9781496443830?utm_source=Digital_BibleGateway_08-01-23_PubBug_LL-brown&amp;utm_medium=Bilingual&amp;utm_campaign=Spanish+Bibles&amp;utm_id=Bilingual&amp;utm_content=Bilingual" rel="noopener noreferrer nofollow" target="_blank">
+     <img alt="NLT" class="bug-full" height="90" loading="lazy" src="https://staticu.bgcdn.com/pub-bug-images/bug_Bilingual Bible160x90.png" width="160"/>
+    </a>
+   </div>
+   <!-- .bga-copyright -->
+  </div>
+ </div>
+</div>

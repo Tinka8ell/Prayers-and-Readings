@@ -1,0 +1,700 @@
+<div class="passage-text">
+ <div class="passage-content passage-class-0">
+  <div class="version-NIVUK result-text-style-normal text-html">
+   <h3>
+    <span class="text John-1-1" id="en-NIVUK-26046">
+     The Word became flesh
+    </span>
+   </h3>
+   <p class="chapter-1">
+    <span class="text John-1-1">
+     <span class="chapternum">
+      1
+     </span>
+     In the beginning was the Word, and the Word was with God, and the Word was God.
+    </span>
+    <span class="text John-1-2" id="en-NIVUK-26047">
+     <sup class="versenum">
+      2
+     </sup>
+     He was with God in the beginning.
+    </span>
+    <span class="text John-1-3" id="en-NIVUK-26048">
+     <sup class="versenum">
+      3
+     </sup>
+     Through him all things were made; without him nothing was made that has been made.
+    </span>
+    <span class="text John-1-4" id="en-NIVUK-26049">
+     <sup class="versenum">
+      4
+     </sup>
+     In him was life, and that life was the light of all mankind.
+    </span>
+    <span class="text John-1-5" id="en-NIVUK-26050">
+     <sup class="versenum">
+      5
+     </sup>
+     The light shines in the darkness, and the darkness has not overcome
+     <sup class="footnote" data-fn="#fen-NIVUK-26050a" data-link='[&lt;a href="#fen-NIVUK-26050a" title="See footnote a"&gt;a&lt;/a&gt;]'>
+      [
+      <a href="#fen-NIVUK-26050a" title="See footnote a">
+       a
+      </a>
+      ]
+     </sup>
+     it.
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-6" id="en-NIVUK-26051">
+     <sup class="versenum">
+      6
+     </sup>
+     There was a man sent from God whose name was John.
+    </span>
+    <span class="text John-1-7" id="en-NIVUK-26052">
+     <sup class="versenum">
+      7
+     </sup>
+     He came as a witness to testify concerning that light, so that through him all might believe.
+    </span>
+    <span class="text John-1-8" id="en-NIVUK-26053">
+     <sup class="versenum">
+      8
+     </sup>
+     He himself was not the light; he came only as a witness to the light.
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-9" id="en-NIVUK-26054">
+     <sup class="versenum">
+      9
+     </sup>
+     The true light that gives light to everyone was coming into the world.
+    </span>
+    <span class="text John-1-10" id="en-NIVUK-26055">
+     <sup class="versenum">
+      10
+     </sup>
+     He was in the world, and though the world was made through him, the world did not recognise him.
+    </span>
+    <span class="text John-1-11" id="en-NIVUK-26056">
+     <sup class="versenum">
+      11
+     </sup>
+     He came to that which was his own, but his own did not receive him.
+    </span>
+    <span class="text John-1-12" id="en-NIVUK-26057">
+     <sup class="versenum">
+      12
+     </sup>
+     Yet to all who did receive him, to those who believed in his name, he gave the right to become children of God –
+    </span>
+    <span class="text John-1-13" id="en-NIVUK-26058">
+     <sup class="versenum">
+      13
+     </sup>
+     children born not of natural descent, nor of human decision or a husband’s will, but born of God.
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-14" id="en-NIVUK-26059">
+     <sup class="versenum">
+      14
+     </sup>
+     The Word became flesh and made his dwelling among us. We have seen his glory, the glory of the one and only Son, who came from the Father, full of grace and truth.
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-15" id="en-NIVUK-26060">
+     <sup class="versenum">
+      15
+     </sup>
+     (John testified concerning him. He cried out, saying, ‘This is the one I spoke about when I said, “He who comes after me has surpassed me because he was before me.”’)
+    </span>
+    <span class="text John-1-16" id="en-NIVUK-26061">
+     <sup class="versenum">
+      16
+     </sup>
+     Out of his fullness we have all received grace in place of grace already given.
+    </span>
+    <span class="text John-1-17" id="en-NIVUK-26062">
+     <sup class="versenum">
+      17
+     </sup>
+     For the law was given through Moses; grace and truth came through Jesus Christ.
+    </span>
+    <span class="text John-1-18" id="en-NIVUK-26063">
+     <sup class="versenum">
+      18
+     </sup>
+     No one has ever seen God, but the one and only Son, who is himself God and
+     <sup class="footnote" data-fn="#fen-NIVUK-26063b" data-link='[&lt;a href="#fen-NIVUK-26063b" title="See footnote b"&gt;b&lt;/a&gt;]'>
+      [
+      <a href="#fen-NIVUK-26063b" title="See footnote b">
+       b
+      </a>
+      ]
+     </sup>
+     is in the closest relationship with the Father, has made him known.
+    </span>
+   </p>
+   <h3>
+    <span class="text John-1-19" id="en-NIVUK-26064">
+     John the Baptist denies being the Messiah
+    </span>
+   </h3>
+   <p>
+    <span class="text John-1-19">
+     <sup class="versenum">
+      19
+     </sup>
+     Now this was John’s testimony when the Jewish leaders
+     <sup class="footnote" data-fn="#fen-NIVUK-26064c" data-link='[&lt;a href="#fen-NIVUK-26064c" title="See footnote c"&gt;c&lt;/a&gt;]'>
+      [
+      <a href="#fen-NIVUK-26064c" title="See footnote c">
+       c
+      </a>
+      ]
+     </sup>
+     in Jerusalem sent priests and Levites to ask him who he was.
+    </span>
+    <span class="text John-1-20" id="en-NIVUK-26065">
+     <sup class="versenum">
+      20
+     </sup>
+     He did not fail to confess, but confessed freely, ‘I am not the Messiah.’
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-21" id="en-NIVUK-26066">
+     <sup class="versenum">
+      21
+     </sup>
+     They asked him, ‘Then who are you? Are you Elijah?’
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-21">
+     He said, ‘I am not.’
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-21">
+     ‘Are you the Prophet?’
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-21">
+     He answered, ‘No.’
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-22" id="en-NIVUK-26067">
+     <sup class="versenum">
+      22
+     </sup>
+     Finally they said, ‘Who are you? Give us an answer to take back to those who sent us. What do you say about yourself?’
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-23" id="en-NIVUK-26068">
+     <sup class="versenum">
+      23
+     </sup>
+     John replied in the words of Isaiah the prophet, ‘I am the voice of one calling in the wilderness, “Make straight the way for the Lord.”’
+     <sup class="footnote" data-fn="#fen-NIVUK-26068d" data-link='[&lt;a href="#fen-NIVUK-26068d" title="See footnote d"&gt;d&lt;/a&gt;]'>
+      [
+      <a href="#fen-NIVUK-26068d" title="See footnote d">
+       d
+      </a>
+      ]
+     </sup>
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-24" id="en-NIVUK-26069">
+     <sup class="versenum">
+      24
+     </sup>
+     Now the Pharisees who had been sent
+    </span>
+    <span class="text John-1-25" id="en-NIVUK-26070">
+     <sup class="versenum">
+      25
+     </sup>
+     questioned him, ‘Why then do you baptise if you are not the Messiah, nor Elijah, nor the Prophet?’
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-26" id="en-NIVUK-26071">
+     <sup class="versenum">
+      26
+     </sup>
+     ‘I baptise with
+     <sup class="footnote" data-fn="#fen-NIVUK-26071e" data-link='[&lt;a href="#fen-NIVUK-26071e" title="See footnote e"&gt;e&lt;/a&gt;]'>
+      [
+      <a href="#fen-NIVUK-26071e" title="See footnote e">
+       e
+      </a>
+      ]
+     </sup>
+     water,’ John replied, ‘but among you stands one you do not know.
+    </span>
+    <span class="text John-1-27" id="en-NIVUK-26072">
+     <sup class="versenum">
+      27
+     </sup>
+     He is the one who comes after me, the straps of whose sandals I am not worthy to untie.’
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-28" id="en-NIVUK-26073">
+     <sup class="versenum">
+      28
+     </sup>
+     This all happened at Bethany on the other side of the Jordan, where John was baptising.
+    </span>
+   </p>
+   <h3>
+    <span class="text John-1-29" id="en-NIVUK-26074">
+     John testifies about Jesus
+    </span>
+   </h3>
+   <p>
+    <span class="text John-1-29">
+     <sup class="versenum">
+      29
+     </sup>
+     The next day John saw Jesus coming towards him and said, ‘Look, the Lamb of God, who takes away the sin of the world!
+    </span>
+    <span class="text John-1-30" id="en-NIVUK-26075">
+     <sup class="versenum">
+      30
+     </sup>
+     This is the one I meant when I said, “A man who comes after me has surpassed me because he was before me.”
+    </span>
+    <span class="text John-1-31" id="en-NIVUK-26076">
+     <sup class="versenum">
+      31
+     </sup>
+     I myself did not know him, but the reason I came baptising with water was that he might be revealed to Israel.’
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-32" id="en-NIVUK-26077">
+     <sup class="versenum">
+      32
+     </sup>
+     Then John gave this testimony: ‘I saw the Spirit come down from heaven as a dove and remain on him.
+    </span>
+    <span class="text John-1-33" id="en-NIVUK-26078">
+     <sup class="versenum">
+      33
+     </sup>
+     And I myself did not know him, but the one who sent me to baptise with water told me, “The man on whom you see the Spirit come down and remain is the one who will baptise with the Holy Spirit.”
+    </span>
+    <span class="text John-1-34" id="en-NIVUK-26079">
+     <sup class="versenum">
+      34
+     </sup>
+     I have seen and I testify that this is God’s Chosen One.’
+     <sup class="footnote" data-fn="#fen-NIVUK-26079f" data-link='[&lt;a href="#fen-NIVUK-26079f" title="See footnote f"&gt;f&lt;/a&gt;]'>
+      [
+      <a href="#fen-NIVUK-26079f" title="See footnote f">
+       f
+      </a>
+      ]
+     </sup>
+    </span>
+   </p>
+   <h3>
+    <span class="text John-1-35" id="en-NIVUK-26080">
+     John’s disciples follow Jesus
+    </span>
+   </h3>
+   <p>
+    <span class="text John-1-35">
+     <sup class="versenum">
+      35
+     </sup>
+     The next day John was there again with two of his disciples.
+    </span>
+    <span class="text John-1-36" id="en-NIVUK-26081">
+     <sup class="versenum">
+      36
+     </sup>
+     When he saw Jesus passing by, he said, ‘Look, the Lamb of God!’
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-37" id="en-NIVUK-26082">
+     <sup class="versenum">
+      37
+     </sup>
+     When the two disciples heard him say this, they followed Jesus.
+    </span>
+    <span class="text John-1-38" id="en-NIVUK-26083">
+     <sup class="versenum">
+      38
+     </sup>
+     Turning round, Jesus saw them following and asked,
+     <span class="woj">
+      ‘What do you want?’
+     </span>
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-38">
+     They said, ‘Rabbi’ (which means ‘Teacher’), ‘where are you staying?’
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-39" id="en-NIVUK-26084">
+     <sup class="versenum">
+      39
+     </sup>
+     <span class="woj">
+      ‘Come,’
+     </span>
+     he replied,
+     <span class="woj">
+      ‘and you will see.’
+     </span>
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-39">
+     So they went and saw where he was staying, and they spent that day with him. It was about four in the afternoon.
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-40" id="en-NIVUK-26085">
+     <sup class="versenum">
+      40
+     </sup>
+     Andrew, Simon Peter’s brother, was one of the two who heard what John had said and who had followed Jesus.
+    </span>
+    <span class="text John-1-41" id="en-NIVUK-26086">
+     <sup class="versenum">
+      41
+     </sup>
+     The first thing Andrew did was to find his brother Simon and tell him, ‘We have found the Messiah’ (that is, the Christ).
+    </span>
+    <span class="text John-1-42" id="en-NIVUK-26087">
+     <sup class="versenum">
+      42
+     </sup>
+     And he brought him to Jesus.
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-42">
+     Jesus looked at him and said,
+     <span class="woj">
+      ‘You are Simon son of John. You will be called Cephas’
+     </span>
+     (which, when translated, is Peter
+     <sup class="footnote" data-fn="#fen-NIVUK-26087g" data-link='[&lt;a href="#fen-NIVUK-26087g" title="See footnote g"&gt;g&lt;/a&gt;]'>
+      [
+      <a href="#fen-NIVUK-26087g" title="See footnote g">
+       g
+      </a>
+      ]
+     </sup>
+     ).
+    </span>
+   </p>
+   <h3>
+    <span class="text John-1-43" id="en-NIVUK-26088">
+     Jesus calls Philip and Nathanael
+    </span>
+   </h3>
+   <p>
+    <span class="text John-1-43">
+     <sup class="versenum">
+      43
+     </sup>
+     The next day Jesus decided to leave for Galilee. Finding Philip, he said to him,
+     <span class="woj">
+      ‘Follow me.’
+     </span>
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-44" id="en-NIVUK-26089">
+     <sup class="versenum">
+      44
+     </sup>
+     Philip, like Andrew and Peter, was from the town of Bethsaida.
+    </span>
+    <span class="text John-1-45" id="en-NIVUK-26090">
+     <sup class="versenum">
+      45
+     </sup>
+     Philip found Nathanael and told him, ‘We have found the one Moses wrote about in the Law, and about whom the prophets also wrote – Jesus of Nazareth, the son of Joseph.’
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-46" id="en-NIVUK-26091">
+     <sup class="versenum">
+      46
+     </sup>
+     ‘Nazareth! Can anything good come from there?’ Nathanael asked.
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-46">
+     ‘Come and see,’ said Philip.
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-47" id="en-NIVUK-26092">
+     <sup class="versenum">
+      47
+     </sup>
+     When Jesus saw Nathanael approaching, he said of him,
+     <span class="woj">
+      ‘Here truly is an Israelite in whom there is no deceit.’
+     </span>
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-48" id="en-NIVUK-26093">
+     <sup class="versenum">
+      48
+     </sup>
+     ‘How do you know me?’ Nathanael asked.
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-48">
+     Jesus answered,
+     <span class="woj">
+      ‘I saw you while you were still under the fig-tree before Philip called you.’
+     </span>
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-49" id="en-NIVUK-26094">
+     <sup class="versenum">
+      49
+     </sup>
+     Then Nathanael declared, ‘Rabbi, you are the Son of God; you are the king of Israel.’
+    </span>
+   </p>
+   <p>
+    <span class="text John-1-50" id="en-NIVUK-26095">
+     <sup class="versenum">
+      50
+     </sup>
+     Jesus said,
+     <span class="woj">
+      ‘You believe
+     </span>
+     <sup class="footnote" data-fn="#fen-NIVUK-26095h" data-link='[&lt;a href="#fen-NIVUK-26095h" title="See footnote h"&gt;h&lt;/a&gt;]'>
+      [
+      <a href="#fen-NIVUK-26095h" title="See footnote h">
+       h
+      </a>
+      ]
+     </sup>
+     <span class="woj">
+      because I told you I saw you under the fig-tree. You will see greater things than that.’
+     </span>
+    </span>
+    <span class="text John-1-51" id="en-NIVUK-26096">
+     <sup class="versenum">
+      51
+     </sup>
+     He then added,
+     <span class="woj">
+      ‘Very truly I tell you,
+     </span>
+     <sup class="footnote" data-fn="#fen-NIVUK-26096i" data-link='[&lt;a href="#fen-NIVUK-26096i" title="See footnote i"&gt;i&lt;/a&gt;]'>
+      [
+      <a href="#fen-NIVUK-26096i" title="See footnote i">
+       i
+      </a>
+      ]
+     </sup>
+     <span class="woj">
+      you
+     </span>
+     <sup class="footnote" data-fn="#fen-NIVUK-26096j" data-link='[&lt;a href="#fen-NIVUK-26096j" title="See footnote j"&gt;j&lt;/a&gt;]'>
+      [
+      <a href="#fen-NIVUK-26096j" title="See footnote j">
+       j
+      </a>
+      ]
+     </sup>
+     <span class="woj">
+      will see “heaven open, and the angels of God ascending and descending on”
+     </span>
+     <sup class="footnote" data-fn="#fen-NIVUK-26096k" data-link='[&lt;a href="#fen-NIVUK-26096k" title="See footnote k"&gt;k&lt;/a&gt;]'>
+      [
+      <a href="#fen-NIVUK-26096k" title="See footnote k">
+       k
+      </a>
+      ]
+     </sup>
+     <span class="woj">
+      the Son of Man.’
+     </span>
+    </span>
+   </p>
+   <div class="footnotes">
+    <h4>
+     Footnotes
+    </h4>
+    <ol>
+     <li id="fen-NIVUK-26050a">
+      <a href="#en-NIVUK-26050" title="Go to John 1:5">
+       John 1:5
+      </a>
+      <span class="footnote-text">
+       Or
+       <i>
+        understood
+       </i>
+      </span>
+     </li>
+     <li id="fen-NIVUK-26063b">
+      <a href="#en-NIVUK-26063" title="Go to John 1:18">
+       John 1:18
+      </a>
+      <span class="footnote-text">
+       Some manuscripts
+       <i>
+        but the only Son, who
+       </i>
+      </span>
+     </li>
+     <li id="fen-NIVUK-26064c">
+      <a href="#en-NIVUK-26064" title="Go to John 1:19">
+       John 1:19
+      </a>
+      <span class="footnote-text">
+       The Greek term traditionally translated
+       <i>
+        the Jews
+       </i>
+       (
+       <i>
+        hoi Ioudaioi
+       </i>
+       ) refers here and elsewhere in John’s Gospel to those Jewish leaders who opposed Jesus; also in 5:10, 15, 16; 7:1, 11, 13; 9:22; 18:14, 28, 36; 19:7, 12, 31, 38; 20:19.
+      </span>
+     </li>
+     <li id="fen-NIVUK-26068d">
+      <a href="#en-NIVUK-26068" title="Go to John 1:23">
+       John 1:23
+      </a>
+      <span class="footnote-text">
+       Isaiah 40:3
+      </span>
+     </li>
+     <li id="fen-NIVUK-26071e">
+      <a href="#en-NIVUK-26071" title="Go to John 1:26">
+       John 1:26
+      </a>
+      <span class="footnote-text">
+       Or
+       <i>
+        in
+       </i>
+       ; also in verses 31 and 33 (twice)
+      </span>
+     </li>
+     <li id="fen-NIVUK-26079f">
+      <a href="#en-NIVUK-26079" title="Go to John 1:34">
+       John 1:34
+      </a>
+      <span class="footnote-text">
+       See Isaiah 42:1; many manuscripts
+       <i>
+        is the Son of God
+       </i>
+       .
+      </span>
+     </li>
+     <li id="fen-NIVUK-26087g">
+      <a href="#en-NIVUK-26087" title="Go to John 1:42">
+       John 1:42
+      </a>
+      <span class="footnote-text">
+       <i>
+        Cephas
+       </i>
+       (Aramaic) and
+       <i>
+        Peter
+       </i>
+       (Greek) both mean
+       <i>
+        rock
+       </i>
+       .
+      </span>
+     </li>
+     <li id="fen-NIVUK-26095h">
+      <a href="#en-NIVUK-26095" title="Go to John 1:50">
+       John 1:50
+      </a>
+      <span class="footnote-text">
+       Or
+       <i>
+        Do you believe . . . ?
+       </i>
+      </span>
+     </li>
+     <li id="fen-NIVUK-26096i">
+      <a href="#en-NIVUK-26096" title="Go to John 1:51">
+       John 1:51
+      </a>
+      <span class="footnote-text">
+       The Greek is plural.
+      </span>
+     </li>
+     <li id="fen-NIVUK-26096j">
+      <a href="#en-NIVUK-26096" title="Go to John 1:51">
+       John 1:51
+      </a>
+      <span class="footnote-text">
+       The Greek is plural.
+      </span>
+     </li>
+     <li id="fen-NIVUK-26096k">
+      <a href="#en-NIVUK-26096" title="Go to John 1:51">
+       John 1:51
+      </a>
+      <span class="footnote-text">
+       Gen. 28:12
+      </span>
+     </li>
+    </ol>
+   </div>
+   <!--end of footnotes-->
+  </div>
+ </div>
+</div>
+<div class="copyright-table">
+ <div class="copyright-table-content flex-7">
+  <div class="publisher-info-bottom">
+   <strong>
+    <a href="/versions/New-International-Version-UK-NIVUK-Bible/">
+     New International Version - UK
+    </a>
+    (NIVUK)
+   </strong>
+   <p>
+    Holy Bible, New International Version® Anglicized, NIV® Copyright © 1979, 1984, 2011 by
+    <a href="http://www.biblica.com/">
+     Biblica, Inc.®
+    </a>
+    Used by permission. All rights reserved worldwide.
+   </p>
+  </div>
+ </div>
+</div>

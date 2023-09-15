@@ -210,9 +210,38 @@ if __name__ == "__main__":
         print(bible.getHtmlParas(reading=True))
     '''
 
+    '''
     version="NLT"
     reading = "song 1"
     url = "https://www.biblegateway.com/passage/"
     values = {"search": reading, "version": version}
     tree = WebTree(url=url, values=values, output="song1.txt")
+    '''
+    '''
+    version="NLT"
+    reading = "psa 7"
+    url = "https://www.biblegateway.com/passage/"
+    values = {"search": reading, "version": version}
+    tree = WebTree(url=url, values=values, output="psalm7.txt")
+    passages = tree.root.findAll('div', class_="passage-text")
+    copyrights = tree.root.findAll('div', class_="copyright-table")
+    with open("psa7.txt", 'w', encoding = 'utf-8') as f:
+        for passage in passages:
+            f.write(passage.prettify())
+        for copyright in copyrights:
+            f.write(copyright.prettify())
+    '''
+    version="NIVUK"
+    reading = "joh 1"
+    url = "https://www.biblegateway.com/passage/"
+    values = {"search": reading, "version": version}
+    tree = WebTree(url=url, values=values, output="john1.txt")
+    passages = tree.root.findAll('div', class_="passage-text")
+    copyrights = tree.root.findAll('div', class_="copyright-table")
+    with open("joh1.txt", 'w', encoding = 'utf-8') as f:
+        for passage in passages:
+            f.write(passage.prettify())
+        for copyright in copyrights:
+            f.write(copyright.prettify())
+
 

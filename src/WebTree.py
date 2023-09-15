@@ -35,14 +35,14 @@ class WebTree:
             data = urllib.parse.urlencode(values)
             self.data = data.encode('utf-8')  # data should be bytes
         self.root = None
-        self.root = self.read() # root of the tree
+        self.root = self._read() # root of the tree
         if output:
-            with open(output, 'w') as f:
+            with open(output, 'w', encoding = 'utf-8') as f:
                 f.write(self.root.prettify())
         self.parse() # use the overrideable parse() method to process it.
         return
 
-    def read(self):
+    def _read(self):
         url = self.url
         data = self.data # could be None if no headers passed
         # create a bunch of headers so we don't look too robot like
