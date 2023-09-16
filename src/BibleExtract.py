@@ -111,7 +111,8 @@ class BibleExtract(WebTree):
     def __init__(self, reading, version="NIVUK"):  # default to English NIV
         self.version = version
         self.reading = reading
-        self.paras = []
+        self.lines = []
+        self.verses = dict()
         self.indent = ""
         url = "https://www.biblegateway.com/passage/"
         values = {"search": reading, "version": version}
@@ -122,7 +123,6 @@ class BibleExtract(WebTree):
         """
         Overrides the parent class (do nothing) and does the work!
         """
-        # paras = []
         # skip to the "passage text" divisions in the tree -  this may be reduced to one!
         passages = self.root.findAll('div', class_="passage-text")
         
@@ -142,27 +142,33 @@ class BibleExtract(WebTree):
             flattenSection(passage, "span", ["text", "woj", "chapter-1", "indent-1-breaks"])#, "indent-1"])
 
             self.decompress(passage, "")
-        #     # May need to review why we do this as paragraphs!
-        #     ps = passage.find_all("p")
-        #     for nextP in ps:
-        #         # remove verse numbers, chapter numbers and footnotes - change to not remove verse numbers!
-        #         removeSection(nextP,
-        #                       ["sup", "span"],
-        #                       ["versenum", "chapternum", "footnote"])
-        #         # ## print("nextP:", nextP.prettify()) # debug
-        #         text = ""
-        #         # compile paragraph
-        #         for string in nextP.stripped_strings:
-        #             string = string.strip()
-        #             text += " " + string
-        #         text = cleanText(text)
-        #         # why am I removing trailing quotes?
-        #         # while text[-1] == "'" or text[-1] == '"':
-        #         #     text = text[:-1]
-        #         # while text[0] == "'" or text[0] == '"':
-        #         #     text = text[1:]
-        #         paras.append(text)
-        # self.paras = paras
+            self.generateVerses()
+
+        return
+    
+    def generateVerses(self):
+        verseNumber = ""
+        verse = []
+        for line in self.lines:
+            parts = line.split(": ", 1)
+            key = parts[0][1:]
+            text = ""
+            if len(parts) > 1:
+                text = parts[1]
+            if key == "verse":
+                # if verseNumber == "" not yet started a verse
+                # but if text (next verse number) 2 or more, we've skipped verse 1
+                # so need to create it
+                if verseNumber != "" or text.startswith("2"):
+                    if verseNumber == "":
+                        verseNumber = "1"
+                    self.verses[verseNumber] = verse
+                    verse = []
+                verseNumber = text
+            else:
+                if not key.startswith("div"):
+                    verse.append((key, text))
+        self.verses[verseNumber] = verse
         return
     
     def decompress(self, passage, prefix, poetry=""):
@@ -194,15 +200,15 @@ class BibleExtract(WebTree):
                 elif attributes.find("indent-3") >= 0: # probably overkill!
                     nextPoetry = "4"
                 else:
-                    self.paras.append(prefix + "." + passage.name + attributes)
-                # lastPara = len(self.paras)
+                    self.lines.append(prefix + "." + passage.name + attributes)
+                # lastPara = len(self.lines)
                 for child in children:
                     self.decompress(child, self.indent + prefix, nextPoetry)
-                # if lastPara == len(self.paras):
+                # if lastPara == len(self.lines):
                 #     # no children
-                #     self.paras[lastPara - 1] = self.paras[lastPara - 1].replace(".", "./")
+                #     self.lines[lastPara - 1] = self.lines[lastPara - 1].replace(".", "./")
                 # else:
-                #     self.paras.append(prefix + "." + passage.name + "/" + attributes)
+                #     self.lines.append(prefix + "." + passage.name + "/" + attributes)
         else:
             self.doSpecial(passage, "text", prefix, poetry)
         return
@@ -214,7 +220,7 @@ class BibleExtract(WebTree):
             text += " " + string
         text = text.strip()
         if len(text) > 0:
-            self.paras.append(prefix + "." + tag + poetry + ": " + text)
+            self.lines.append(prefix + "." + tag + poetry + ": " + text)
 
     def show(self):
         """
@@ -223,16 +229,21 @@ class BibleExtract(WebTree):
         super().show()
         print("reading:", self.reading)
         print("version:", self.version)
-        print("paras:", len(self.paras))
-        for para in self.paras:
+        print("paras:", len(self.lines))
+        for para in self.lines:
             print("   " + para)
+        print("verses:", len(self.verses))
+        for verseNumber in self.verses.keys():
+            print("   verse " + verseNumber)
+            for line in self.verses[verseNumber]:
+                print("      " + line[0] + ": " + line[1])
         return
 
     def showPassage(self):
         """
         Display passage for debugging.
         """
-        for para in self.paras:
+        for para in self.lines:
             print(">>>", para)
         print("reading:", self.reading)
         return
@@ -261,7 +272,7 @@ class BibleExtract(WebTree):
         """
         html = []
         html.append('<div class="bible">')
-        for para in self.paras:
+        for para in self.lines:
             html.append(tagText(para, "p"))
         if reading:
             html.append(tagText(self.reading, 'p class="reading"'))
