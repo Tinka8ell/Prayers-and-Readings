@@ -18,6 +18,28 @@ import re
 from WebTree import WebTree
 
 
+def findbad(text, show=True):
+    ok = True
+    for ch in text:
+        if not ch.isascii():
+            ok = False
+            # string with encoding 'utf-8'
+            arr = bytes(ch, 'utf-8')
+            # arr2 = bytes(ch, 'ascii')
+            ascii = ""
+            pref = " - "
+            for byte in arr:
+                ascii += pref + str(byte)
+                pref = ", "
+            # pref = " - "
+            # for byte in arr2:
+            #     ascii += pref + str(byte)
+            #     pref = ", "
+            print(ascii)
+    if show and not ok:
+        print(text)
+    return
+
 def cleanText(text, xmlReplace=False):
     """
     Utility to clean up text that may be in a web page.
@@ -26,14 +48,17 @@ def cleanText(text, xmlReplace=False):
     Also remove excessive white space characters.
     """
     if text:
-        swaps = {"â€™": "'",  # remove funny apostrophes
-                 "â€˜": "'",  # remove funny apostrophes
-                 "â€œ": '"',  # remove funny double-quotes
-                 "â€�": '"',  # remove funny double-quotes
-                 "â€”": "-",  # remove funny dashes
-                 "â€¦": "...",  # remove funny ellipses
-                 "\n": " ",  # remove excess new-lines
-                 "  ": " "}  # remove excess spaces
+        swaps = { 
+            bytes([226, 128, 152]).decode('utf-8'): "'",  # remove funny apostrophes
+            bytes([226, 128, 153]).decode('utf-8'): "'",  # remove funny apostrophes
+            bytes([226, 128, 148]).decode('utf-8'): " - ",  # remove funny apostrophes
+            bytes([226, 128, 156]).decode('utf-8'): '"',  # remove funny double-quotes
+            bytes([226, 128, 157]).decode('utf-8'): '"',  # remove funny double-quotes
+            bytes([226, 128, 148]).decode('utf-8'): " - ",  # remove funny dashes
+        #  bytes().decode('utf-8'): "...",  # remove funny ellipses
+            "\n": " ",  # remove excess new-lines
+            "  ": " ",  # remove excess spaces
+        }
         for key in swaps.keys():
             text = text.replace(key, swaps[key])
         # join up random gaps in punctuation - not sure about this and quotes ...
@@ -41,6 +66,7 @@ def cleanText(text, xmlReplace=False):
     else:
         text = ''
     text = text.strip()
+    findbad(text)
     if xmlReplace:
         text = text.encode('ascii', 'xmlcharrefreplace').decode()
     return text
@@ -110,10 +136,12 @@ def getIndentAndAddText(indent, html, key, text):
             html.append('</span>\n')
         indent = nextIndent
         html.append('<span class="indent-' + indent + '">')
-    if text[0].isalpha():
-        html.append(" " + text)
-    else:
-        html.append(text)
+    appendText = text
+    if len(appendText) > 0 and appendText[0].isalpha():
+        appendText = " " + appendText
+    if key[0] == "t" and len(appendText) > 0 and appendText[-1].isalpha():
+        appendText += " "
+    html.append(appendText)
     return indent
 
 
@@ -165,11 +193,62 @@ class BibleExtract(WebTree):
             flattenSection(passage, "div", ["passage-text", "passage-content", "text-html"])
             flattenSection(passage, "span", ["text", "woj", "chapter-1", "indent-1-breaks"])#, "indent-1"])
 
+            # print("Bad chars: ''" + '""' + "-...")
+            # findbad("â€™ â€˜ â€œ â€� â€” â€¦", show=False)
+            # findbad("“’”")
+            # findbad("“‘-’”")
             self.decompress(passage, "")
             self.generateVerses()
 
         return
     
+    def decompress(self, passage, prefix, poetry=""):
+        if passage.name:
+            attributes =  ""
+            nextPoetry = poetry
+            if passage.name != "p" and passage.name != "h4" and passage.attrs:
+                for attr in passage.attrs.keys():
+                    value = passage.attrs[attr]
+                    if isinstance(value, (list, tuple)):
+                        value = ", ".join(passage.attrs[attr])
+                    attributes += ", " + attr + ": " + value
+                if len(attributes) > 1:
+                    attributes = attributes[1:] # remove the leading ','
+            if isSpecial(passage.name, "sup", attributes, "class: versenum"):
+                self.doSpecial(passage, "verse", prefix)
+            elif isSpecial(passage.name, "span", attributes, "class: selah"):
+                self.doSpecial(passage, "selah", prefix, poetry)
+            elif isSpecial(passage.name, "span", attributes, "class: small-caps"):
+                self.doSpecial(passage, "lord", prefix, poetry)
+            elif isSpecial(passage.name, "i", attributes, ""):
+                self.doSpecial(passage, "emphasis", prefix, poetry)
+            else:
+                children = passage.children
+                if attributes.find("poetry") >= 0:
+                    nextPoetry = "1"
+                elif attributes.find("indent-1") >= 0: # very common
+                    nextPoetry = "2"
+                elif attributes.find("indent-2") >= 0: # have seen this
+                    nextPoetry = "3"
+                elif attributes.find("indent-3") >= 0: # probably overkill!
+                    nextPoetry = "4"
+                else:
+                    self.lines.append(prefix + "." + passage.name + attributes)
+                for child in children:
+                    self.decompress(child, self.indent + prefix, nextPoetry)
+        else:
+            self.doSpecial(passage, "text", prefix, poetry)
+        return
+    
+    def doSpecial(self, passage, tag, prefix="", poetry=""):
+        text = ""
+        for string in passage.stripped_strings:
+            string = string.strip()
+            text += " " + string
+        text = cleanText(text)
+        # if len(text) > 0:
+        self.lines.append(prefix + "." + tag + poetry + ": " + text)
+
     def generateVerses(self):
         verseNumber = ""
         (html, isHeading, isSpan) = ([], False, False)
@@ -216,65 +295,14 @@ class BibleExtract(WebTree):
                     selah = '<span class="selah">' + text + '</span>'
                     indent = getIndentAndAddText(indent, html, key, selah)
                 case "e": # emphasis
-                    html.append('<span class="emphasis">')
-                    isSpan = True
+                    emphasis = '<span class="emphasis">' + text + '</span>'
+                    indent = getIndentAndAddText(indent, html, key, emphasis)
                 case "t": # text
                     indent = getIndentAndAddText(indent, html, key, text)
         endIndent(isSpan, indent, html)
         self.verses[verseNumber] = html
         return
     
-    def decompress(self, passage, prefix, poetry=""):
-        if passage.name:
-            attributes =  ""
-            nextPoetry = poetry
-            if passage.name != "p" and passage.name != "h4" and passage.attrs:
-                for attr in passage.attrs.keys():
-                    value = passage.attrs[attr]
-                    if isinstance(value, (list, tuple)):
-                        value = ", ".join(passage.attrs[attr])
-                    attributes += ", " + attr + ": " + value
-                if len(attributes) > 1:
-                    attributes = attributes[1:] # remove the leading ','
-            if isSpecial(passage.name, "sup", attributes, "class: versenum"):
-                self.doSpecial(passage, "verse", prefix)
-            elif isSpecial(passage.name, "span", attributes, "class: selah"):
-                self.doSpecial(passage, "selah", prefix, poetry)
-            elif isSpecial(passage.name, "span", attributes, "class: small-caps"):
-                self.doSpecial(passage, "lord", prefix, poetry)
-            else:
-                children = passage.children
-                if attributes.find("poetry") >= 0:
-                    nextPoetry = "1"
-                elif attributes.find("indent-1") >= 0: # very common
-                    nextPoetry = "2"
-                elif attributes.find("indent-2") >= 0: # have seen this
-                    nextPoetry = "3"
-                elif attributes.find("indent-3") >= 0: # probably overkill!
-                    nextPoetry = "4"
-                else:
-                    self.lines.append(prefix + "." + passage.name + attributes)
-                # lastPara = len(self.lines)
-                for child in children:
-                    self.decompress(child, self.indent + prefix, nextPoetry)
-                # if lastPara == len(self.lines):
-                #     # no children
-                #     self.lines[lastPara - 1] = self.lines[lastPara - 1].replace(".", "./")
-                # else:
-                #     self.lines.append(prefix + "." + passage.name + "/" + attributes)
-        else:
-            self.doSpecial(passage, "text", prefix, poetry)
-        return
-    
-    def doSpecial(self, passage, tag, prefix="", poetry=""):
-        text = ""
-        for string in passage.stripped_strings:
-            string = string.strip()
-            text += " " + string
-        text = text.strip()
-        if len(text) > 0:
-            self.lines.append(prefix + "." + tag + poetry + ": " + text)
-
     def show(self):
         """
         Extended display function for debugging.
@@ -282,15 +310,15 @@ class BibleExtract(WebTree):
         super().show()
         print("Reading:", self.reading)
         print("Version:", self.version)
-        # print("Paras:", len(self.lines))
+        print("Paras:", len(self.lines))
         # for para in self.lines:
         #     print("   " + para)
         print("Verses:", len(self.verses))
         for verseNumber in self.verses.keys():
             print("Verse " + verseNumber + ":")
             print("".join(self.verses[verseNumber]))
-        print("\n" + self.getPassage(1, 3))
-        print("\n" + self.getPassage(4, 6))
+        # print("\n" + self.getPassage(1, 3))
+        # print("\n" + self.getPassage(4, 6))
         return
 
     def getPassage(self, first, last):
@@ -374,7 +402,8 @@ if __name__ == "__main__":
         
     # testIt("john", 1, "NLT")
     # testIt("psalm", 3, "NLT")
-    testIt("psalm", 3, "NIVUK")
+    testIt("john", 3, "MSG")
+    # testIt("psalm", 3, "NIVUK")
     # testIt("phil", 2, "NIVUK")
     # testIt("song", 1, "NLT")
     # testIt("song", 1, "NIVUK")
