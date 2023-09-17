@@ -54,6 +54,8 @@ def cleanText(text, xmlReplace=False):
             bytes([226, 128, 148]).decode('utf-8'): " - ",  # remove funny apostrophes
             bytes([226, 128, 156]).decode('utf-8'): '"',  # remove funny double-quotes
             bytes([226, 128, 157]).decode('utf-8'): '"',  # remove funny double-quotes
+            bytes([194, 160]).decode('utf-8'): "&nbsp;",  # remove funny non-breaking space
+            bytes([226, 128, 147]).decode('utf-8'): "-",  # remove funny dashes
             bytes([226, 128, 148]).decode('utf-8'): " - ",  # remove funny dashes
         #  bytes().decode('utf-8'): "...",  # remove funny ellipses
             "\n": " ",  # remove excess new-lines
@@ -139,7 +141,7 @@ def getIndentAndAddText(indent, html, key, text):
     appendText = text
     if len(appendText) > 0 and appendText[0].isalpha():
         appendText = " " + appendText
-    if key[0] == "t" and len(appendText) > 0 and appendText[-1].isalpha():
+    if key[0] == "t" and len(appendText) > 0: # and not appendText[-1].isalpha():
         appendText += " "
     html.append(appendText)
     return indent
@@ -193,10 +195,6 @@ class BibleExtract(WebTree):
             flattenSection(passage, "div", ["passage-text", "passage-content", "text-html"])
             flattenSection(passage, "span", ["text", "woj", "chapter-1", "indent-1-breaks"])#, "indent-1"])
 
-            # print("Bad chars: ''" + '""' + "-...")
-            # findbad("â€™ â€˜ â€œ â€� â€” â€¦", show=False)
-            # findbad("“’”")
-            # findbad("“‘-’”")
             self.decompress(passage, "")
             self.generateVerses()
 
@@ -310,15 +308,15 @@ class BibleExtract(WebTree):
         super().show()
         print("Reading:", self.reading)
         print("Version:", self.version)
-        print("Paras:", len(self.lines))
+        # print("Paras:", len(self.lines))
         # for para in self.lines:
         #     print("   " + para)
-        print("Verses:", len(self.verses))
-        for verseNumber in self.verses.keys():
-            print("Verse " + verseNumber + ":")
-            print("".join(self.verses[verseNumber]))
-        # print("\n" + self.getPassage(1, 3))
-        # print("\n" + self.getPassage(4, 6))
+        # print("Verses:", len(self.verses))
+        # for verseNumber in self.verses.keys():
+        #     print("Verse " + verseNumber + ":")
+        #     print("".join(self.verses[verseNumber]))
+        print("\n" + self.getPassage(1, 3))
+        print("\n" + self.getPassage(4, 6))
         return
 
     def getPassage(self, first, last):
@@ -394,6 +392,8 @@ if __name__ == "__main__":
     print()
     bible.show()
     '''
+    # findbad("“’”")
+    # findbad("Let him kiss me with the kisses of his mouth&nbsp;–")
     def testIt(book, chapter, version):
         reference = book + " " + str(chapter)
         print("BibleExtract(\"" + reference + "\", version=\"" + version + "\")")
@@ -402,9 +402,10 @@ if __name__ == "__main__":
         
     # testIt("john", 1, "NLT")
     # testIt("psalm", 3, "NLT")
-    testIt("john", 3, "MSG")
     # testIt("psalm", 3, "NIVUK")
+    # testIt("john", 3, "MSG")
+    # testIt("john", 3, "NLT")
     # testIt("phil", 2, "NIVUK")
-    # testIt("song", 1, "NLT")
-    # testIt("song", 1, "NIVUK")
+    testIt("song", 1, "NLT")
+    testIt("song", 1, "NIVUK")
     
