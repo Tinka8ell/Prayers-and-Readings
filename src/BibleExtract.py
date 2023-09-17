@@ -280,17 +280,32 @@ class BibleExtract(WebTree):
         Extended display function for debugging.
         """
         super().show()
-        print("reading:", self.reading)
-        print("version:", self.version)
-        print("paras:", len(self.lines))
-        for para in self.lines:
-            print("   " + para)
-        print("verses:", len(self.verses))
+        print("Reading:", self.reading)
+        print("Version:", self.version)
+        # print("Paras:", len(self.lines))
+        # for para in self.lines:
+        #     print("   " + para)
+        print("Verses:", len(self.verses))
         for verseNumber in self.verses.keys():
-            print("   verse " + verseNumber)
-            for line in self.verses[verseNumber]:
-                print("      " + line)
+            print("Verse " + verseNumber + ":")
+            print("".join(self.verses[verseNumber]))
+        print("\n" + self.getPassage(1, 3))
+        print("\n" + self.getPassage(4, 6))
         return
+
+    def getPassage(self, first, last):
+        passage = ""
+        for verse in range(first, last + 1):
+            passage += "".join(self.verses[str(verse)])
+        if passage[0:4] == "</p>":
+            passage = passage[4:]
+        else:
+            passage = "<p>" + passage
+        if passage[-3:] == "<p>":
+            passage = passage[:-4]
+        else:
+            passage += "</p>"
+        return "<h1> Verses " + str(first) + " to " + str(last) + " </h1>\n" + passage
 
     def showPassage(self):
         """
