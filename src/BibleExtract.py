@@ -92,6 +92,30 @@ def flattenSection(passage, section, class_=None):
 def isSpecial(name, nameTest, attributes, attributesTest):
     return name == nameTest and attributes.find(attributesTest) >= 0
 
+def endIndent(isSpan, indent, html):
+    if isSpan:
+        html.append("</span>")
+        isSpan = False
+    if indent != "":
+        html.append('</span>\n')
+    indent = ""
+    return (isSpan, indent)
+
+def getIndentAndAddText(indent, html, key, text):
+    nextIndent = key[-1]
+    if not nextIndent.isdecimal():
+        nextIndent = ""
+    if indent != nextIndent:
+        if indent != "":
+            html.append('</span>\n')
+        indent = nextIndent
+        html.append('<span class="indent-' + indent + '">')
+    if text[0].isalpha():
+        html.append(" " + text)
+    else:
+        html.append(text)
+    return indent
+
 
 class BibleExtract(WebTree):
     """
@@ -148,27 +172,56 @@ class BibleExtract(WebTree):
     
     def generateVerses(self):
         verseNumber = ""
-        verse = []
+        (html, isHeading, isSpan) = ([], False, False)
+        indent = ""
         for line in self.lines:
             parts = line.split(": ", 1)
             key = parts[0][1:]
             text = ""
             if len(parts) > 1:
                 text = parts[1]
-            if key == "verse":
-                # if verseNumber == "" not yet started a verse
-                # but if text (next verse number) 2 or more, we've skipped verse 1
-                # so need to create it
-                if verseNumber != "" or text.startswith("2"):
-                    if verseNumber == "":
+            keyType = key[0]
+            match keyType:
+                case "v": # verse indicator
+                    # if verseNumber == "" not yet started a verse
+                    # but if text (next verse number) 2 or more, we've skipped verse 1
+                    # so need to create it
+                    if verseNumber == "" and text.startswith("2"):
                         verseNumber = "1"
-                    self.verses[verseNumber] = verse
-                    verse = []
-                verseNumber = text
-            else:
-                if not key.startswith("div"):
-                    verse.append((key, text))
-        self.verses[verseNumber] = verse
+                    if verseNumber != "":
+                        (isSpan, indent) = endIndent(isSpan, indent, html)
+                        self.verses[verseNumber] = html
+                        (html, isHeading, isSpan) = ([], False, False)
+                        # html = []
+                        # isHeading = False
+                        # isSpan = False
+                    verseNumber = text
+                case "h": # heading
+                    (isSpan, indent) = endIndent(isSpan, indent, html)
+                    html.append("</p>" + "\n")
+                    html.append('<div class="heading">')
+                    isHeading = True
+                case "p": # paragraph
+                    (isSpan, indent) = endIndent(isSpan, indent, html)
+                    if isHeading:
+                        html.append("</div>" + "\n")
+                        isHeading = False
+                    else:
+                        html.append("</p>" + "\n")
+                    html.append('<p>')
+                case "l": # lord
+                    lord = '<span class="lord">' + text + '</span>'
+                    indent = getIndentAndAddText(indent, html, key, lord)
+                case "s": # selah
+                    selah = '<span class="selah">' + text + '</span>'
+                    indent = getIndentAndAddText(indent, html, key, selah)
+                case "e": # emphasis
+                    html.append('<span class="emphasis">')
+                    isSpan = True
+                case "t": # text
+                    indent = getIndentAndAddText(indent, html, key, text)
+        endIndent(isSpan, indent, html)
+        self.verses[verseNumber] = html
         return
     
     def decompress(self, passage, prefix, poetry=""):
@@ -186,9 +239,9 @@ class BibleExtract(WebTree):
             if isSpecial(passage.name, "sup", attributes, "class: versenum"):
                 self.doSpecial(passage, "verse", prefix)
             elif isSpecial(passage.name, "span", attributes, "class: selah"):
-                self.doSpecial(passage, "selah", prefix)
+                self.doSpecial(passage, "selah", prefix, poetry)
             elif isSpecial(passage.name, "span", attributes, "class: small-caps"):
-                self.doSpecial(passage, "lord", prefix)
+                self.doSpecial(passage, "lord", prefix, poetry)
             else:
                 children = passage.children
                 if attributes.find("poetry") >= 0:
@@ -236,7 +289,7 @@ class BibleExtract(WebTree):
         for verseNumber in self.verses.keys():
             print("   verse " + verseNumber)
             for line in self.verses[verseNumber]:
-                print("      " + line[0] + ": " + line[1])
+                print("      " + line)
         return
 
     def showPassage(self):
