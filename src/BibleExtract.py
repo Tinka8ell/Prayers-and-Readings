@@ -16,6 +16,7 @@ import os
 import re
 
 from WebTree import WebTree
+from BibleStore import *
 
 
 def findbad(text, show=True):
@@ -162,8 +163,11 @@ class BibleExtract(WebTree):
     Try to add as much relevant formatting and verse markers.
     """
 
-    def __init__(self, reading, version="NIVUK"):  # default to English NIV
+    def __init__(self, book, chapter, version="NIVUK"):  # default to English NIV
         self.version = version
+        self.book = book
+        self.chapter = chapter
+        reading = book + " " + str(chapter)
         self.reading = reading
         self.lines = []
         self.verses = dict()
@@ -267,7 +271,7 @@ class BibleExtract(WebTree):
                         verseNumber = "1"
                     if verseNumber != "":
                         (isSpan, indent) = endIndent(isSpan, indent, html)
-                        self.verses[verseNumber] = html
+                        self.saveVerse(verseNumber, html)
                         (html, isHeading, isSpan) = ([], False, False)
                         # html = []
                         # isHeading = False
@@ -298,7 +302,48 @@ class BibleExtract(WebTree):
                 case "t": # text
                     indent = getIndentAndAddText(indent, html, key, text)
         endIndent(isSpan, indent, html)
+        self.saveVerse(verseNumber, html)
+        return
+    
+    @db_session
+    def saveVerse(self, verseNumber, html):
         self.verses[verseNumber] = html
+
+        verseNumber = int(verseNumber)
+        versions = select(v for v in Version if v.Abbreviation == self.version)[:]
+        if len(versions) > 0:
+            version = versions[0]
+        else:
+            print("Creating Version:", self.version)
+            version = Version(Abbreviation = self.version, Name = "Was not set")
+
+        extenedAbbreviation = self.book[0:3]
+        books = select(b for b in Book if b.ExtenedAbbreviation == extenedAbbreviation and b.version == version)[:]
+        if len(books) > 0:
+            book = books[0]
+        else:
+            print("Creating Book:", self.book)
+            book = Book(ExtenedAbbreviation = extenedAbbreviation, Name = self.book, Total = 0, version = version)
+
+        chapters = select(c for c in Chapter if c.Number == self.chapter and c.book == book)[:]
+        if len(chapters) > 0:
+            chapter = chapters[0]
+        else:
+            print("Creating Chapter:", self.chapter)
+            chapter = Chapter(Number = self.chapter, Verses = 0, book = book)
+        if book.Total < self.chapter:
+            print("Updating Book:", self.book, " to total verses ", self.chapter)
+            book.Total = self.chapter
+        
+        content = "\n".join(html)
+        print("Creating Verse:", verseNumber)
+        verse = Verse(Number = verseNumber, Content = content, chapter = chapter)
+        if chapter.Verses < verseNumber:
+            print("Updating Chapter:", self.chapter, " to total verses ", verseNumber)
+            chapter.Verses = verseNumber
+
+        print("Creating Lookup for Verse:", verseNumber)
+        Lookup(Number = verseNumber, chapter = chapter, verse = verse)
         return
     
     def show(self):
@@ -397,7 +442,7 @@ if __name__ == "__main__":
     def testIt(book, chapter, version):
         reference = book + " " + str(chapter)
         print("BibleExtract(\"" + reference + "\", version=\"" + version + "\")")
-        bible = BibleExtract(reference, version=version)
+        bible = BibleExtract(book, chapter, version=version)
         bible.show()
         
     # testIt("john", 1, "NLT")

@@ -12,3 +12,7 @@ with fixed prayers and text "translated" into more contemporary english
 and replacing as much as possible with the bible quotes they come from.
 
 Forms the basis of my Daily Office.
+
+## next steps
+Morking out how to store the bible data to better retrieve the bible verse on demand.
+using this [data format](./docs/BibleStore.md)
