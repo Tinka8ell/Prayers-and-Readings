@@ -184,7 +184,8 @@ class BibleExtract(WebTree):
         """
         Overrides the parent class (do nothing) and does the work!
         """
-        self.processPublishers(self.root)
+        self.processPreviousNext()
+        self.processPublishers()
         # skip to the "passage text" divisions in the tree -  this may be reduced to one!
         passages = self.root.findAll('div', class_="passage-text")
         # print("Found", len(passages), "passages, processing each ...")
@@ -213,21 +214,43 @@ class BibleExtract(WebTree):
         self.generateVerses()
         return
     
-    def processPublishers(self, passage):
-        publishers = passage.findAll("div", re.compile("publisher"))
+    def processPreviousNext(self, isDebug=False):
+        """
+        Get previous and next chapter names if exist
+        """
+        self.nextChapter = None
+        self.prevChapter = None
+        pages = self.root.findAll("div",  class_="prev-next")
+        for page in pages:
+            links = page.findAll("a", class_="next-chapter")
+            for link in links:
+                self.nextChapter = link.attrs["title"]
+                if isDebug:
+                    print("Next chapter:", self.nextChapter)
+            links = page.findAll("a", class_="prev-chapter")
+            for link in links:
+                self.prevChapter = link.attrs["title"]
+                if isDebug:
+                    print("Prev chapter:", self.prevChapter)
+        return
+    
+    def processPublishers(self, isDebug=False):
+        publishers = self.root.findAll("div", re.compile("publisher"))
         for publisher in publishers:
             for child in publisher.children:
                 match child.name:
                     case "strong":
                         flattenSection(child, "a")
                         self.versionName = cleanText(" ".join(child.stripped_strings))
-                        print("   Version:", self.versionName)
+                        if isDebug:
+                            print("   Version:", self.versionName)
                     case "p":
                         flattenSection(child, "a")
                         self.copyright = cleanText(" ".join(child.stripped_strings))
                         years = re.findall("\\D\\d\\d\\d\\d\\D", self.copyright)
                         self.year = int(years[-1][1:5])
-                        print("   Copyright:", self.year, " - ", self.copyright)
+                        if isDebug:
+                            print("   Copyright:", self.year, " - ", self.copyright)
         return
     
     def decompress(self, passage, prefix, poetry=""):
@@ -495,15 +518,19 @@ if __name__ == "__main__":
         reference = book + " " + str(chapter)
         print("BibleExtract(\"" + reference + "\", version=\"" + version + "\")")
         bible = BibleExtract(book, chapter, version=version)
+        print("Version:", bible.year, bible.versionName, bible.copyright)
+        print("Next:", bible.nextChapter)
+        print("Previous:", bible.prevChapter)
         # bible.show()
         
     # testIt("john", 1, "NLT")
     # testIt("psalm", 3, "NLT")
     # testIt("psalm", 3, "NIVUK")
     testIt("john", 3, "MSG")
-    testIt("john", 3, "NLT")
-    testIt("john", 3, "NIVUK")
+    # testIt("john", 3, "NLT")
+    # testIt("john", 3, "NIVUK")
     # testIt("phil", 2, "NIVUK")
     # testIt("song", 1, "NLT")
     # testIt("song", 1, "NIVUK")
-    
+    testIt("gen", 1, "NIVUK")
+    testIt("2 Chr", 1, "NLT")
