@@ -58,6 +58,8 @@ def cleanText(text, xmlReplace=False):
             bytes([194, 160]).decode('utf-8'): "&nbsp;",  # remove funny non-breaking space
             bytes([226, 128, 147]).decode('utf-8'): "-",  # remove funny dashes
             bytes([226, 128, 148]).decode('utf-8'): " - ",  # remove funny dashes
+            bytes([194, 174]).decode('utf-8'): " (R) ",  # replace registered symbol
+            bytes([194, 169]).decode('utf-8'): " (C) ",  # replace copyright symbol
         #  bytes().decode('utf-8'): "...",  # remove funny ellipses
             "\n": " ",  # remove excess new-lines
             "  ": " ",  # remove excess spaces
@@ -165,6 +167,7 @@ class BibleExtract(WebTree):
 
     def __init__(self, book, chapter, version="NIVUK"):  # default to English NIV
         self.version = version
+        self.versionName = "Was not set"
         self.book = book
         self.chapter = chapter
         reading = book + " " + str(chapter)
@@ -181,27 +184,50 @@ class BibleExtract(WebTree):
         """
         Overrides the parent class (do nothing) and does the work!
         """
+        self.processPublishers(self.root)
         # skip to the "passage text" divisions in the tree -  this may be reduced to one!
         passages = self.root.findAll('div', class_="passage-text")
-        
+        # print("Found", len(passages), "passages, processing each ...")
         # what if no passage found?
         for passage in passages:
-            # print("passage:", passage.prettify()) # debug
-            # remove footnote divisions
-            removeSection(passage, "div", "footnotes")
-            # remove crossref divisions
-            removeSection(passage, "div", re.compile("crossrefs"))
-            # remove publisher info divisions - this may be used to test for version changes!
-            removeSection(passage, "div", re.compile("publisher"))
-            # print("cleaned passage:", passage.prettify()) # debug
-            removeSection(passage, "h3") # the added headings, but h4 used as extra info (not has headings)
-            removeSection(passage, ["sup", "span"], ["chapternum", "footnote"])
-            flattenSection(passage, "div", ["passage-text", "passage-content", "text-html"])
-            flattenSection(passage, "span", ["text", "woj", "chapter-1", "indent-1-breaks"])#, "indent-1"])
+            self.processPassage(passage)
+        return
+    
+    def processPassage(self, passage):
+        # print("passage:", passage.prettify()) # debug
+        # remove footnote divisions
+        removeSection(passage, "div", "footnotes")
+        # remove crossref divisions
+        removeSection(passage, "div", re.compile("crossrefs"))
+        # remove publisher info divisions - this may be used to test for version changes!
+        # self.processPublishers(passage)
+        # Publisher info is not in passage sections, so not required here ...
+        removeSection(passage, "div", re.compile("publisher"))
+        # print("cleaned passage:", passage.prettify()) # debug
+        removeSection(passage, "h3") # the added headings, but h4 used as extra info (not has headings)
+        removeSection(passage, ["sup", "span"], ["chapternum", "footnote"])
+        flattenSection(passage, "div", ["passage-text", "passage-content", "text-html"])
+        flattenSection(passage, "span", ["text", "woj", "chapter-1", "indent-1-breaks"])#, "indent-1"])
 
-            self.decompress(passage, "")
-            self.generateVerses()
-
+        self.decompress(passage, "")
+        self.generateVerses()
+        return
+    
+    def processPublishers(self, passage):
+        publishers = passage.findAll("div", re.compile("publisher"))
+        for publisher in publishers:
+            for child in publisher.children:
+                match child.name:
+                    case "strong":
+                        flattenSection(child, "a")
+                        self.versionName = cleanText(" ".join(child.stripped_strings))
+                        print("   Version:", self.versionName)
+                    case "p":
+                        flattenSection(child, "a")
+                        self.copyright = cleanText(" ".join(child.stripped_strings))
+                        years = re.findall("\\D\\d\\d\\d\\d\\D", self.copyright)
+                        self.year = int(years[-1][1:5])
+                        print("   Copyright:", self.year, " - ", self.copyright)
         return
     
     def decompress(self, passage, prefix, poetry=""):
@@ -306,7 +332,7 @@ class BibleExtract(WebTree):
         return
     
     @db_session
-    def saveVerse(self, verseNumber, html):
+    def saveVerse(self, verseNumber, html, isDebug=False):
         self.verses[verseNumber] = html
         numbers = verseNumber.split("-")
         firstNumber = int(numbers[0])
@@ -316,30 +342,38 @@ class BibleExtract(WebTree):
         versions = select(v for v in Version if v.Abbreviation == self.version)[:]
         if len(versions) > 0:
             version = versions[0]
+            version.Name = self.versionName
+            version.Year = self.year
+            version.Copyright = self.copyright
         else:
-            print("Creating Version:", self.version)
-            version = Version(Abbreviation = self.version, Name = "Was not set")
+            if isDebug:
+                print("Creating Version:", self.version)
+            version = Version(Abbreviation = self.version, Name = self.versionName, Year = self.year, Copyright = self.copyright)
 
         extenedAbbreviation = self.book[0:3]
         books = select(b for b in Book if b.ExtenedAbbreviation == extenedAbbreviation and b.version == version)[:]
         if len(books) > 0:
             book = books[0]
         else:
-            print("Creating Book:", self.book)
+            if isDebug:
+                print("Creating Book:", self.book)
             book = Book(ExtenedAbbreviation = extenedAbbreviation, Name = self.book, Total = 0, version = version)
 
         chapters = select(c for c in Chapter if c.Number == self.chapter and c.book == book)[:]
         if len(chapters) > 0:
             chapter = chapters[0]
         else:
-            print("Creating Chapter:", self.chapter)
+            if isDebug:
+                print("Creating Chapter:", self.chapter)
             chapter = Chapter(Number = self.chapter, Verses = 0, book = book)
         if book.Total < self.chapter:
-            print("Updating Book:", self.book, " to total verses ", self.chapter)
+            if isDebug:
+                print("Updating Book:", self.book, " to total verses ", self.chapter)
             book.Total = self.chapter
         
         content = "\n".join(html)
-        print("Creating Verse:", verseNumber)
+        if isDebug:
+            print("Creating Verse:", verseNumber)
         verses = select(v for v in Verse if v.Number == firstNumber and v.Last == lastNumber and v.chapter == chapter)[:]
         if len(verses) > 0: # re-use old record
             verse = verses[0]
@@ -349,11 +383,13 @@ class BibleExtract(WebTree):
         if not lastNumber:
             lastNumber = firstNumber
         if chapter.Verses < lastNumber:
-            print("Updating Chapter:", self.chapter, " to total verses ", lastNumber)
+            if isDebug:
+                print("Updating Chapter:", self.chapter, " to total verses ", lastNumber)
             chapter.Verses = lastNumber
 
         for verseNumber in range (firstNumber, lastNumber + 1):
-            print("Creating Lookup for Verse:", verseNumber)
+            if isDebug:
+                print("Creating Lookup for Verse:", verseNumber)
             lookups = select(l for l in Lookup if l.Number == verseNumber and l.chapter == chapter)[:]
             if len(lookups) > 0: # re-use old record
                 lookup = lookups[0]
@@ -398,8 +434,8 @@ class BibleExtract(WebTree):
         """
         Display passage for debugging.
         """
-        for para in self.lines:
-            print(">>>", para)
+        for line in self.lines:
+            print(">>>", line)
         print("reading:", self.reading)
         return
 
@@ -427,8 +463,8 @@ class BibleExtract(WebTree):
         """
         html = []
         html.append('<div class="bible">')
-        for para in self.lines:
-            html.append(tagText(para, "p"))
+        for line in self.lines:
+            html.append(tagText(line, "p"))
         if reading:
             html.append(tagText(self.reading, 'p class="reading"'))
         html.append('</div>')

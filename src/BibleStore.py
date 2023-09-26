@@ -10,6 +10,8 @@ class Version(db.Entity):
     id = PrimaryKey(int, auto=True)
     Abbreviation = Required(str, 0, unique=True)
     Name = Required(str)
+    Year = Optional(int)
+    Copyright = Optional(str)
     books = Set('Book')
 
 
