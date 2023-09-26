@@ -308,8 +308,11 @@ class BibleExtract(WebTree):
     @db_session
     def saveVerse(self, verseNumber, html):
         self.verses[verseNumber] = html
-
-        verseNumber = int(verseNumber)
+        numbers = verseNumber.split("-")
+        firstNumber = int(numbers[0])
+        lastNumber = None
+        if len(numbers) > 1:
+            lastNumber = int(numbers[1])
         versions = select(v for v in Version if v.Abbreviation == self.version)[:]
         if len(versions) > 0:
             version = versions[0]
@@ -337,13 +340,26 @@ class BibleExtract(WebTree):
         
         content = "\n".join(html)
         print("Creating Verse:", verseNumber)
-        verse = Verse(Number = verseNumber, Content = content, chapter = chapter)
-        if chapter.Verses < verseNumber:
-            print("Updating Chapter:", self.chapter, " to total verses ", verseNumber)
-            chapter.Verses = verseNumber
+        verses = select(v for v in Verse if v.Number == firstNumber and v.Last == lastNumber and v.chapter == chapter)[:]
+        if len(verses) > 0: # re-use old record
+            verse = verses[0]
+            verse.Content = content
+        else: # create new record
+            verse = Verse(Number = firstNumber, Last = lastNumber, Content = content, chapter = chapter)
+        if not lastNumber:
+            lastNumber = firstNumber
+        if chapter.Verses < lastNumber:
+            print("Updating Chapter:", self.chapter, " to total verses ", lastNumber)
+            chapter.Verses = lastNumber
 
-        print("Creating Lookup for Verse:", verseNumber)
-        Lookup(Number = verseNumber, chapter = chapter, verse = verse)
+        for verseNumber in range (firstNumber, lastNumber + 1):
+            print("Creating Lookup for Verse:", verseNumber)
+            lookups = select(l for l in Lookup if l.Number == verseNumber and l.chapter == chapter)[:]
+            if len(lookups) > 0: # re-use old record
+                lookup = lookups[0]
+                lookup.verse = verse
+            else: # create new record
+                lookup = Lookup(Number = verseNumber, chapter = chapter, verse = verse)
         return
     
     def show(self):
@@ -443,14 +459,15 @@ if __name__ == "__main__":
         reference = book + " " + str(chapter)
         print("BibleExtract(\"" + reference + "\", version=\"" + version + "\")")
         bible = BibleExtract(book, chapter, version=version)
-        bible.show()
+        # bible.show()
         
     # testIt("john", 1, "NLT")
     # testIt("psalm", 3, "NLT")
     # testIt("psalm", 3, "NIVUK")
-    # testIt("john", 3, "MSG")
-    # testIt("john", 3, "NLT")
+    testIt("john", 3, "MSG")
+    testIt("john", 3, "NLT")
+    testIt("john", 3, "NIVUK")
     # testIt("phil", 2, "NIVUK")
-    testIt("song", 1, "NLT")
-    testIt("song", 1, "NIVUK")
+    # testIt("song", 1, "NLT")
+    # testIt("song", 1, "NIVUK")
     
