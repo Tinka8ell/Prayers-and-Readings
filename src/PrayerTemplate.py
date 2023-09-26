@@ -47,14 +47,15 @@ class PrayerTemplate():
         self.title = None
         self.addDate = False
         self.weekLink = None
-        self.documentDate = datetime.today() # document is now, unless contents are older ..
-        self.oldDocumentDate = datetime.today() # the same for now
+        self.templateDate = None
+        self.generatedDocDate = None # datetime.today() # document is now, unless contents are older ..
+        self.currentDocDate = None # datetime.today() # the same for now
         self.parse()
         return
 
     def parse(self):
         directory = os.path.dirname(__file__)
-        parent = directory  # keep finger on parent
+        # parent = directory  # keep finger on parent
         name = self.name
         filename = os.path.join(directory, name + ".txt")
         self.templateDate = datetime.fromtimestamp(os.path.getmtime(filename)) # get a date for template last update
@@ -121,14 +122,14 @@ class PrayerTemplate():
             name += date.today().isoformat()
         filename = os.path.join(directory, name + ".html")
         if os.path.exists(filename):
-            self.oldDocumentDate = datetime.fromtimestamp(os.path.getmtime(filename)) # last update time of previous file
+            self.currentDocDate = datetime.fromtimestamp(os.path.getmtime(filename)) # last update time of previous file
             # see if file has an internal time
             with open(filename) as fp:
                 soup = BeautifulSoup(fp, 'html.parser')
                 # <meta name="filedate" content="2022-01-03T10:44:49Z">
                 tag = soup.find('meta', 'name=filedate') # get the filedate meta tag
                 if tag is not None:
-                    self.oldDocumentDate = date(tag['content'])
+                    self.currentDocDate = date(tag['content'])
         # print("Creating prayer page:", filename)
         title = "Template for: " + date.today().strftime("%A %d %B %Y")
         if self.title is None:
@@ -140,45 +141,80 @@ class PrayerTemplate():
         print("Creating html: filename =", filename)
         html = self.getHtml()
         # only create new version if it really is new ...
-        print("Creating html: oldDocumentDate =", self.oldDocumentDate, ", documentDate =", self.documentDate)
-        if self.oldDocumentDate < self.documentDate:
-            # use the new one
-            ### print("Writing ", filename, self.oldDocumentDate , self.documentDate)
-            with open(filename, 'w', encoding="utf-8") as f:
-                print(html, file=f)
-            # may remove this when we have proper redirect working
-            if os.name == 'posix':
-                # point symbolic link to file created:
-                symbolic = os.path.join(parent, self.name + ".html")
-                print("Creating symbolic link: symbolic =", symbolic)
-                filename = Path(filename)
-                print("Creating symbolic link: filename =", filename)
-                symbolic = Path(symbolic)
-                print("Creating symbolic link: symbolic =", symbolic)
-                if symbolic.exists():
-                    os.unlink(symbolic)
-                os.symlink(filename, symbolic)
+        print("Creating html: currentDocDate =", self.currentDocDate, ", generatedDocDate =", self.generatedDocDate)
+        """
+        If current:
+            If current < template: generate new
+            Else: *don't* generate
+        Else:
+            If generated:
+                If generate >= today: generate new
+                Else: *don't* generate
+            Else: generate with now date
+        """
+        if self.currentDocDate:
+            if self.currentDocDate < self.templateDate:
+                self.generateNewDoc()
+            else:
+                print("Not generating as template older")
         else:
-            ### print("Skipping ", filename, self.oldDocumentDate , self.documentDate)
-            pass
+            if self.generatedDocDate:
+                print("Generated date:", self.generatedDocDate, self.generatedDocDate.date())
+                print("  Today's date:", datetime.today(), datetime.today().date())
+                if self.generatedDocDate.date() >= datetime.today().date():
+                    self.generateNewDoc(filename, parent, html)
+                else:
+                    print("Not generating as generarted date older than today:", self.generatedDocDate.date(), datetime.today().date())
+            else:
+                self.generateNewDoc(filename, parent, html)
         return
 
-    def updateDocumentDate(self, newDate):
+    def generateNewDoc(self, filename, parent, html):
+        # use the new one
+        ### print("Writing ", filename, self.currentDocDate , self.generatedDocDate)
+        with open(filename, 'w', encoding="utf-8") as f:
+            print(html, file=f)
+        # may remove this when we have proper redirect working
+        if os.name == 'posix':
+            # point symbolic link to file created:
+            symbolic = os.path.join(parent, self.name + ".html")
+            print("Creating symbolic link: symbolic =", symbolic)
+            filename = Path(filename)
+            print("Creating symbolic link: filename =", filename)
+            symbolic = Path(symbolic)
+            if symbolic.exists():
+                print("Deleting symbolic link: ", symbolic)
+                os.unlink(symbolic)
+            print("Creating symbolic link: symbolic to filename", symbolic, filename)
+            os.symlink(filename, symbolic)
+        return
+
+    def updateGeneratedDocDate(self, newDate):
         # start with date objects
-        ### print("updateDocumentDate:", documentDate, newDate)
+        ### print("updateGeneratedDocDate:", self.generatedDocDate, newDate)
+        newDatetime = datetime.combine(newDate, time()) # start of newDate as time() is 0:00:00!
+        if self.generatedDocDate:
+            if self.generatedDocDate > newDatetime: # if older than current document date
+                ### print("generatedDocDate > newDate:", self.generatedDocDate, newDate)
+                self.generatedDocDate = newDatetime
+        else:
+            ### print("generatedDocDate = newDate:", newDate)
+            self.generatedDocDate = newDatetime
+        """
         now = datetime.today().date()
         if now.day != newDate.day: # so not from today
             ### print("now > newDate:", now, newDate)
             # now work with datetime objects
             newDatetime = datetime.combine(newDate, time()) # start of newDate as time() is 0:00:00!
-            if self.documentDate > newDatetime: # if older than current document date
-                ### print("documentDate > newDate:", documentDate, newDate)
-                self.documentDate = newDatetime
-        ### print("updateDocumentDate sets:", documentDate)
+            if self.generatedDocDate > newDatetime: # if older than current document date
+                ### print("generatedDocDate > newDate:", generatedDocDate, newDate)
+                self.generatedDocDate = newDatetime
+        ### print("updateGeneratedDocDate sets:", generatedDocDate)
+        """
         return
 
     def getHtml(self):
-        self.documentDate = self.templateDate # start with the age of the template
+        # self.generatedDocDate = datetime.min # self.templateDate # start with the age of the template
         html = []
         html.append(self.p1)
         html.append(self.title)
@@ -234,17 +270,17 @@ class PrayerTemplate():
                 html.append(self.closeTag())
                 if para == "Moravian":
                     insert = Moravian(self.moravian, version=self.version)
-                    self.updateDocumentDate(insert.getDate())
+                    self.updateGeneratedDocDate(insert.getDate())
                     # print("Moravian:", insert.show())
                     html.append(insert.getHtml(showdivs=False))
                 elif para == "Northumbrian":
                     insert = DailyPrayer(self.northumbrian, version=self.version)
-                    self.updateDocumentDate(insert.getDate())
+                    self.updateGeneratedDocDate(insert.getDate())
                     # print("DailyPrayer:", insert.show())
                     html.append(insert.getHtml(showdivs=False))
                 elif para == "OpenDoors":
                     insert = OpenDoors(self.opendoors)
-                    self.updateDocumentDate(insert.getDate())
+                    self.updateGeneratedDocDate(insert.getDate())
                     # print("DailyPrayer:", insert.show())
                     html.append(insert.getHtml(showdivs=False))
             else:
@@ -254,7 +290,7 @@ class PrayerTemplate():
         # insert document date
         pos, index = fileDatePos
         # set this document's date
-        html[pos] = html[pos][:index] + self.documentDate.isoformat() + html[pos][index:]
+        html[pos] = html[pos][:index] + self.generatedDocDate.isoformat() + html[pos][index:]
         return '\n'.join(html)
 
 
