@@ -22,6 +22,7 @@ import re
 
 from WebTree import WebTree
 from BibleStore import *
+from BiblePOPO import VersionPOPO, BookPOPO
 
 
 def _findbad(text, isDebug=False):
@@ -161,11 +162,16 @@ class BibleChapterExtract(WebTree):
     """
 
     def __init__(self, book, chapter, version="NIVUK"):  # default to English NIV
-        self.version = version
-        self.versionName = "Was not set"
-        self.book = book
-        self.chapter = chapter
-        reading = book + " " + str(chapter)
+        self.version = VersionPOPO(version)
+        book = book.trim()
+        abrieviation = book[0:1]
+        if abrieviation.isdigit():
+            abrieviation += " " + book[1:].trim()[0:3]
+        else:
+            abrieviation = book[0:3]
+        self.book = BookPOPO(abrieviation, book)
+        self.chapter = int(chapter)
+        reading = book.ExtenedAbbreviation + " " + str(chapter)
         self.reading = reading
         self.lines = []
         self.verses = dict()
@@ -179,8 +185,8 @@ class BibleChapterExtract(WebTree):
         """
         Overrides the parent class (do nothing) and does the work!
         """
-        self.processPreviousNext()
         self.processPublishers()
+        self.processPreviousNext()
         # skip to the "passage text" divisions in the tree -  this may be reduced to one!
         passages = self.root.findAll('div', class_="passage-text")
         # print("Found", len(passages), "passages, processing each ...")
