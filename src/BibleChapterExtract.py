@@ -1,16 +1,21 @@
-# Process a bible reference as a passage
+# Process a chapter of a book of a bible version
 #
-#     Initially reference is any reference, but might become:
-#         Chapter, or
-#         Book, ...
+#     Requires: 
+#         Version abrieviation
+#         Book abrieviation (can be full name)
+#             Optional book number and space
+#             At least fist 3 characters of name
+#         Chapter number
 #
 #     Look up a bible reference on Bible Gateway.
 #
-#     Default to anglicised NIV, but can be overridden with version.
+#     Default to anglicised NIV(UK), but can be overridden with version.
 #     Using WebTree read the page and extract the content as marked up text.
 #     So skip titles, headings and chapter numbers.
 #     Also skip footnotes and references.
 #     Try to add as much relevant formatting and verse markers.
+#     Add all verses (if not already in the Bible Store)
+#     Identify the next and previous chapters that need to be processed
 
 import os
 import re
@@ -19,7 +24,7 @@ from WebTree import WebTree
 from BibleStore import *
 
 
-def findbad(text, show=True):
+def _findbad(text, isDebug=False):
     ok = True
     for ch in text:
         if not ch.isascii():
@@ -37,11 +42,11 @@ def findbad(text, show=True):
             #     ascii += pref + str(byte)
             #     pref = ", "
             print(ascii)
-    if show and not ok:
+    if isDebug and not ok:
         print(text)
     return
 
-def cleanText(text, xmlReplace=False):
+def _cleanText(text, xmlReplace=False):
     """
     Utility to clean up text that may be in a web page.
 
@@ -71,28 +76,12 @@ def cleanText(text, xmlReplace=False):
     else:
         text = ''
     text = text.strip()
-    findbad(text)
+    _findbad(text)
     if xmlReplace:
         text = text.encode('ascii', 'xmlcharrefreplace').decode()
     return text
 
-
-def tagText(text, tag):
-    """
-    Wrap an html tag arround some text.
-    """
-    html = ''
-    if text:
-        closeTag = "/" + tag.split(" ")[0]  # strip after first space
-        if tag[-1] == "/":
-            closeTag = None
-        html = "<" + tag + ">" + \
-            cleanText(text, xmlReplace=True)
-        if closeTag:
-            html += "<" + closeTag + ">"
-    return html
-
-def removeSection(passage, section, class_=None):
+def _removeSection(passage, section, class_=None):
     """
     Remove all sections with given class from the passage.
     Passage is a BeautifulSoup sub-tree.
@@ -106,7 +95,7 @@ def removeSection(passage, section, class_=None):
         div = passage.find(section, class_=class_)
     return
 
-def flattenSection(passage, section, class_=None):
+def _flattenSection(passage, section, class_=None):
     """
     Replace all sections with given class with their children the passage.
     Passage is a BeautifulSoup sub-tree.
@@ -120,10 +109,10 @@ def flattenSection(passage, section, class_=None):
         div = passage.find(section, class_=class_)
     return
 
-def isSpecial(name, nameTest, attributes, attributesTest):
+def _isSpecial(name, nameTest, attributes, attributesTest):
     return name == nameTest and attributes.find(attributesTest) >= 0
 
-def endIndent(isSpan, indent, html):
+def _endIndent(isSpan, indent, html):
     if isSpan:
         html.append("</span>")
         isSpan = False
@@ -132,7 +121,7 @@ def endIndent(isSpan, indent, html):
     indent = ""
     return (isSpan, indent)
 
-def getIndentAndAddText(indent, html, key, text):
+def _getIndentAndAddText(indent, html, key, text):
     nextIndent = key[-1]
     if not nextIndent.isdecimal():
         nextIndent = ""
@@ -150,19 +139,25 @@ def getIndentAndAddText(indent, html, key, text):
     return indent
 
 
-class BibleExtract(WebTree):
+class BibleChapterExtract(WebTree):
     """
-    Initially reference is any reference, but might become:
-        Chapter, or
-        Book, ...
+    Process a chapter of a book of a bible version
 
-    Look up a bible reference on Bible Gateway.
+        Requires: 
+            Version abrieviation
+            Book abrieviation (can be full name)
+                Optional book number and space
+                At least fist 3 characters of name
+            Chapter number
+        Look up a bible reference on Bible Gateway.
 
-    Default to anglicised NIV, but can be overridden with version.
-    Using WebTree read the page and extract the content as marked up text.
-    So skip titles, headings and chapter numbers.
-    Also skip footnotes and references.
-    Try to add as much relevant formatting and verse markers.
+        Default to anglicised NIV(UK), but can be overridden with version.
+        Using WebTree read the page and extract the content as marked up text.
+        So skip titles, headings and chapter numbers.
+        Also skip footnotes and references.
+        Try to add as much relevant formatting and verse markers.
+        Add all verses (if not already in the Bible Store)
+        Identify the next and previous chapters that need to be processed
     """
 
     def __init__(self, book, chapter, version="NIVUK"):  # default to English NIV
@@ -191,27 +186,27 @@ class BibleExtract(WebTree):
         # print("Found", len(passages), "passages, processing each ...")
         # what if no passage found?
         for passage in passages:
-            self.processPassage(passage)
+            self._processPassage(passage)
         return
     
-    def processPassage(self, passage):
+    def _processPassage(self, passage):
         # print("passage:", passage.prettify()) # debug
         # remove footnote divisions
-        removeSection(passage, "div", "footnotes")
+        _removeSection(passage, "div", "footnotes")
         # remove crossref divisions
-        removeSection(passage, "div", re.compile("crossrefs"))
+        _removeSection(passage, "div", re.compile("crossrefs"))
         # remove publisher info divisions - this may be used to test for version changes!
         # self.processPublishers(passage)
         # Publisher info is not in passage sections, so not required here ...
-        removeSection(passage, "div", re.compile("publisher"))
+        _removeSection(passage, "div", re.compile("publisher"))
         # print("cleaned passage:", passage.prettify()) # debug
-        removeSection(passage, "h3") # the added headings, but h4 used as extra info (not has headings)
-        removeSection(passage, ["sup", "span"], ["chapternum", "footnote"])
-        flattenSection(passage, "div", ["passage-text", "passage-content", "text-html"])
-        flattenSection(passage, "span", ["text", "woj", "chapter-1", "indent-1-breaks"])#, "indent-1"])
+        _removeSection(passage, "h3") # the added headings, but h4 used as extra info (not has headings)
+        _removeSection(passage, ["sup", "span"], ["chapternum", "footnote"])
+        _flattenSection(passage, "div", ["passage-text", "passage-content", "text-html"])
+        _flattenSection(passage, "span", ["text", "woj", "chapter-1", "indent-1-breaks"])#, "indent-1"])
 
-        self.decompress(passage, "")
-        self.generateVerses()
+        self._decompress(passage, "")
+        self._generateVerses()
         return
     
     def processPreviousNext(self, isDebug=False):
@@ -240,20 +235,20 @@ class BibleExtract(WebTree):
             for child in publisher.children:
                 match child.name:
                     case "strong":
-                        flattenSection(child, "a")
-                        self.versionName = cleanText(" ".join(child.stripped_strings))
+                        _flattenSection(child, "a")
+                        self.versionName = _cleanText(" ".join(child.stripped_strings))
                         if isDebug:
                             print("   Version:", self.versionName)
                     case "p":
-                        flattenSection(child, "a")
-                        self.copyright = cleanText(" ".join(child.stripped_strings))
+                        _flattenSection(child, "a")
+                        self.copyright = _cleanText(" ".join(child.stripped_strings))
                         years = re.findall("\\D\\d\\d\\d\\d\\D", self.copyright)
                         self.year = int(years[-1][1:5])
                         if isDebug:
                             print("   Copyright:", self.year, " - ", self.copyright)
         return
     
-    def decompress(self, passage, prefix, poetry=""):
+    def _decompress(self, passage, prefix, poetry=""):
         if passage.name:
             attributes =  ""
             nextPoetry = poetry
@@ -265,14 +260,14 @@ class BibleExtract(WebTree):
                     attributes += ", " + attr + ": " + value
                 if len(attributes) > 1:
                     attributes = attributes[1:] # remove the leading ','
-            if isSpecial(passage.name, "sup", attributes, "class: versenum"):
-                self.doSpecial(passage, "verse", prefix)
-            elif isSpecial(passage.name, "span", attributes, "class: selah"):
-                self.doSpecial(passage, "selah", prefix, poetry)
-            elif isSpecial(passage.name, "span", attributes, "class: small-caps"):
-                self.doSpecial(passage, "lord", prefix, poetry)
-            elif isSpecial(passage.name, "i", attributes, ""):
-                self.doSpecial(passage, "emphasis", prefix, poetry)
+            if _isSpecial(passage.name, "sup", attributes, "class: versenum"):
+                self._doSpecial(passage, "verse", prefix)
+            elif _isSpecial(passage.name, "span", attributes, "class: selah"):
+                self._doSpecial(passage, "selah", prefix, poetry)
+            elif _isSpecial(passage.name, "span", attributes, "class: small-caps"):
+                self._doSpecial(passage, "lord", prefix, poetry)
+            elif _isSpecial(passage.name, "i", attributes, ""):
+                self._doSpecial(passage, "emphasis", prefix, poetry)
             else:
                 children = passage.children
                 if attributes.find("poetry") >= 0:
@@ -286,21 +281,21 @@ class BibleExtract(WebTree):
                 else:
                     self.lines.append(prefix + "." + passage.name + attributes)
                 for child in children:
-                    self.decompress(child, self.indent + prefix, nextPoetry)
+                    self._decompress(child, self.indent + prefix, nextPoetry)
         else:
-            self.doSpecial(passage, "text", prefix, poetry)
+            self._doSpecial(passage, "text", prefix, poetry)
         return
     
-    def doSpecial(self, passage, tag, prefix="", poetry=""):
+    def _doSpecial(self, passage, tag, prefix="", poetry=""):
         text = ""
         for string in passage.stripped_strings:
             string = string.strip()
             text += " " + string
-        text = cleanText(text)
+        text = _cleanText(text)
         # if len(text) > 0:
         self.lines.append(prefix + "." + tag + poetry + ": " + text)
 
-    def generateVerses(self):
+    def _generateVerses(self):
         verseNumber = ""
         (html, isHeading, isSpan) = ([], False, False)
         indent = ""
@@ -319,20 +314,20 @@ class BibleExtract(WebTree):
                     if verseNumber == "" and text.startswith("2"):
                         verseNumber = "1"
                     if verseNumber != "":
-                        (isSpan, indent) = endIndent(isSpan, indent, html)
-                        self.saveVerse(verseNumber, html)
+                        (isSpan, indent) = _endIndent(isSpan, indent, html)
+                        self._saveVerse(verseNumber, html)
                         (html, isHeading, isSpan) = ([], False, False)
                         # html = []
                         # isHeading = False
                         # isSpan = False
                     verseNumber = text
                 case "h": # heading
-                    (isSpan, indent) = endIndent(isSpan, indent, html)
+                    (isSpan, indent) = _endIndent(isSpan, indent, html)
                     html.append("</p>" + "\n")
                     html.append('<div class="heading">')
                     isHeading = True
                 case "p": # paragraph
-                    (isSpan, indent) = endIndent(isSpan, indent, html)
+                    (isSpan, indent) = _endIndent(isSpan, indent, html)
                     if isHeading:
                         html.append("</div>" + "\n")
                         isHeading = False
@@ -341,21 +336,21 @@ class BibleExtract(WebTree):
                     html.append('<p>')
                 case "l": # lord
                     lord = '<span class="lord">' + text + '</span>'
-                    indent = getIndentAndAddText(indent, html, key, lord)
+                    indent = _getIndentAndAddText(indent, html, key, lord)
                 case "s": # selah
                     selah = '<span class="selah">' + text + '</span>'
-                    indent = getIndentAndAddText(indent, html, key, selah)
+                    indent = _getIndentAndAddText(indent, html, key, selah)
                 case "e": # emphasis
                     emphasis = '<span class="emphasis">' + text + '</span>'
-                    indent = getIndentAndAddText(indent, html, key, emphasis)
+                    indent = _getIndentAndAddText(indent, html, key, emphasis)
                 case "t": # text
-                    indent = getIndentAndAddText(indent, html, key, text)
-        endIndent(isSpan, indent, html)
-        self.saveVerse(verseNumber, html)
+                    indent = _getIndentAndAddText(indent, html, key, text)
+        _endIndent(isSpan, indent, html)
+        self._saveVerse(verseNumber, html)
         return
     
     @db_session
-    def saveVerse(self, verseNumber, html, isDebug=False):
+    def _saveVerse(self, verseNumber, html, isDebug=False):
         self.verses[verseNumber] = html
         numbers = verseNumber.split("-")
         firstNumber = int(numbers[0])
@@ -462,37 +457,6 @@ class BibleExtract(WebTree):
         print("reading:", self.reading)
         return
 
-    def htmlParas(self, f, reading=False):
-        """
-        Format the paragraphs as html and send to given output file f.
-
-        Wrap the paragraphs in a "div" of class "bible".
-            Wrap each paragraph in a "p".
-            If reading is requested:
-            Wrap it in a "p" of class "reading".
-        """
-        html = self.getHtmlParas(reading)
-        print(html, file=f)
-        return
-
-    def getHtmlParas(self, reading=False):
-        """
-        Format the paragraphs as html.
-
-        Wrap the paragraphs in a "div" of class "bible".
-            Wrap each paragraph in a "p".
-            If reading is requested:
-            Wrap it in a "p" of class "reading".
-        """
-        html = []
-        html.append('<div class="bible">')
-        for line in self.lines:
-            html.append(tagText(line, "p"))
-        if reading:
-            html.append(tagText(self.reading, 'p class="reading"'))
-        html.append('</div>')
-        return '\n'.join(html)
-
 
 if __name__ == "__main__":
     """
@@ -512,12 +476,12 @@ if __name__ == "__main__":
     print()
     bible.show()
     '''
-    # findbad("“’”")
-    # findbad("Let him kiss me with the kisses of his mouth&nbsp;–")
+    # _findbad("“’”")
+    # _findbad("Let him kiss me with the kisses of his mouth&nbsp;–")
     def testIt(book, chapter, version):
         reference = book + " " + str(chapter)
         print("BibleExtract(\"" + reference + "\", version=\"" + version + "\")")
-        bible = BibleExtract(book, chapter, version=version)
+        bible = BibleChapterExtract(book, chapter, version=version)
         print("Version:", bible.year, bible.versionName, bible.copyright)
         print("Next:", bible.nextChapter)
         print("Previous:", bible.prevChapter)
