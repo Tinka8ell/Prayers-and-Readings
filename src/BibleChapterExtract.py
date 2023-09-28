@@ -166,9 +166,9 @@ class BibleChapterExtract(WebTree):
         book = book.strip()
         abrieviation = book[0:1]
         if abrieviation.isdigit():
-            abrieviation += " " + book[1:].strip()[0:3]
+            abrieviation += " " + book[1:].strip()[0:3].lower()
         else:
-            abrieviation = book[0:3]
+            abrieviation = book[0:3].lower()
         self.book = BookPOPO(abrieviation, book)
         self.chapter = int(chapter)
         reading =  self.book.ExtenedAbbreviation + " " + str(chapter)
@@ -185,7 +185,7 @@ class BibleChapterExtract(WebTree):
         """
         Overrides the parent class (do nothing) and does the work!
         """
-        self.processPublishers()
+        self._processPublishers()
         self.processPreviousNext()
         # skip to the "passage text" divisions in the tree -  this may be reduced to one!
         passages = self.root.findAll('div', class_="passage-text")
@@ -235,7 +235,7 @@ class BibleChapterExtract(WebTree):
                     print("Prev chapter:", self.prevChapter)
         return
     
-    def processPublishers(self, isDebug=False):
+    def _processPublishers(self, isDebug=False):
         publishers = self.root.findAll("div", re.compile("publisher"))
         for publisher in publishers:
             for child in publisher.children:
@@ -252,8 +252,27 @@ class BibleChapterExtract(WebTree):
                         self.version.Year = int(years[-1][1:5])
                         if isDebug:
                             print("   Copyright:", self.version.Year, " - ", self.version.Copyright)
+        self.bibleStoreVersion = self._getBibelStoreVersion(isDebug=isDebug)
         return
-    
+
+    @db_session
+    def _getBibelStoreVersion(self, isDebug=False):
+        versions = select(v for v in Version if v.Abbreviation == self.version.Abbreviation)[:]
+        if len(versions) == 0:
+            if isDebug:
+                print("Creating Version:", self.version.Abbreviation)
+            version = Version(Abbreviation = self.version.Abbreviation, Name = self.version.Name, Year = self.version.Year, Copyright = self.version.Copyright)
+        else:
+            version = versions[0]
+            for v in versions: 
+                if v.Year > version.Year: # select most recent
+                    version = v
+            # Probabaly not required any more, but here in case needs updating
+            version.Name = self.version.Name
+            version.Year = self.version.Year
+            version.Copyright = self.version.Copyright
+        return version
+
     def _decompress(self, passage, prefix, poetry=""):
         if passage.name:
             attributes =  ""
@@ -363,24 +382,14 @@ class BibleChapterExtract(WebTree):
         lastNumber = None
         if len(numbers) > 1:
             lastNumber = int(numbers[1])
-        versions = select(v for v in Version if v.Abbreviation == self.version.Abbreviation)[:]
-        if len(versions) > 0:
-            version = versions[0]
-            version.Name = self.version.Name
-            version.Year = self.version.Year
-            version.Copyright = self.version.Copyright
-        else:
-            if isDebug:
-                print("Creating Version:", self.version.Abbreviation)
-            version = Version(Abbreviation = self.version.Abbreviation, Name = self.version.Name, Year = self.version.Year, Copyright = self.version.Copyright)
 
-        books = select(b for b in Book if b.ExtenedAbbreviation == self.book.ExtenedAbbreviation and b.version == version)[:]
+        books = select(b for b in Book if b.ExtenedAbbreviation == self.book.ExtenedAbbreviation and b.version == self.bibleStoreVersion)[:]
         if len(books) > 0:
             book = books[0]
         else:
             if isDebug:
                 print("Creating Book:", self.book.ExtenedAbbreviation, " - ", self.book.Name)
-            book = Book(ExtenedAbbreviation = self.book.ExtenedAbbreviation, Name = self.book.Name, Total = 0, version = version)
+            book = Book(ExtenedAbbreviation = self.book.ExtenedAbbreviation, Name = self.book.Name, Total = 0, version = self.bibleStoreVersion)
 
         chapters = select(c for c in Chapter if c.Number == self.chapter and c.book == book)[:]
         if len(chapters) > 0:
