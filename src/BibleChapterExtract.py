@@ -163,15 +163,15 @@ class BibleChapterExtract(WebTree):
 
     def __init__(self, book, chapter, version="NIVUK"):  # default to English NIV
         self.version = VersionPOPO(version)
-        book = book.trim()
+        book = book.strip()
         abrieviation = book[0:1]
         if abrieviation.isdigit():
-            abrieviation += " " + book[1:].trim()[0:3]
+            abrieviation += " " + book[1:].strip()[0:3]
         else:
             abrieviation = book[0:3]
         self.book = BookPOPO(abrieviation, book)
         self.chapter = int(chapter)
-        reading = book.ExtenedAbbreviation + " " + str(chapter)
+        reading =  self.book.ExtenedAbbreviation + " " + str(chapter)
         self.reading = reading
         self.lines = []
         self.verses = dict()
@@ -242,16 +242,16 @@ class BibleChapterExtract(WebTree):
                 match child.name:
                     case "strong":
                         _flattenSection(child, "a")
-                        self.versionName = _cleanText(" ".join(child.stripped_strings))
+                        self.version.Name = _cleanText(" ".join(child.stripped_strings))
                         if isDebug:
-                            print("   Version:", self.versionName)
+                            print("   Version:", self.version.Name)
                     case "p":
                         _flattenSection(child, "a")
-                        self.copyright = _cleanText(" ".join(child.stripped_strings))
-                        years = re.findall("\\D\\d\\d\\d\\d\\D", self.copyright)
-                        self.year = int(years[-1][1:5])
+                        self.version.Copyright = _cleanText(" ".join(child.stripped_strings))
+                        years = re.findall("\\D\\d\\d\\d\\d\\D", self.version.Copyright)
+                        self.version.Year = int(years[-1][1:5])
                         if isDebug:
-                            print("   Copyright:", self.year, " - ", self.copyright)
+                            print("   Copyright:", self.version.Year, " - ", self.version.Copyright)
         return
     
     def _decompress(self, passage, prefix, poetry=""):
@@ -363,25 +363,24 @@ class BibleChapterExtract(WebTree):
         lastNumber = None
         if len(numbers) > 1:
             lastNumber = int(numbers[1])
-        versions = select(v for v in Version if v.Abbreviation == self.version)[:]
+        versions = select(v for v in Version if v.Abbreviation == self.version.Abbreviation)[:]
         if len(versions) > 0:
             version = versions[0]
-            version.Name = self.versionName
-            version.Year = self.year
-            version.Copyright = self.copyright
+            version.Name = self.version.Name
+            version.Year = self.version.Year
+            version.Copyright = self.version.Copyright
         else:
             if isDebug:
-                print("Creating Version:", self.version)
-            version = Version(Abbreviation = self.version, Name = self.versionName, Year = self.year, Copyright = self.copyright)
+                print("Creating Version:", self.version.Abbreviation)
+            version = Version(Abbreviation = self.version.Abbreviation, Name = self.version.Name, Year = self.version.Year, Copyright = self.version.Copyright)
 
-        extenedAbbreviation = self.book[0:3]
-        books = select(b for b in Book if b.ExtenedAbbreviation == extenedAbbreviation and b.version == version)[:]
+        books = select(b for b in Book if b.ExtenedAbbreviation == self.book.ExtenedAbbreviation and b.version == version)[:]
         if len(books) > 0:
             book = books[0]
         else:
             if isDebug:
-                print("Creating Book:", self.book)
-            book = Book(ExtenedAbbreviation = extenedAbbreviation, Name = self.book, Total = 0, version = version)
+                print("Creating Book:", self.book.ExtenedAbbreviation, " - ", self.book.Name)
+            book = Book(ExtenedAbbreviation = self.book.ExtenedAbbreviation, Name = self.book.Name, Total = 0, version = version)
 
         chapters = select(c for c in Chapter if c.Number == self.chapter and c.book == book)[:]
         if len(chapters) > 0:
@@ -392,7 +391,7 @@ class BibleChapterExtract(WebTree):
             chapter = Chapter(Number = self.chapter, Verses = 0, book = book)
         if book.Total < self.chapter:
             if isDebug:
-                print("Updating Book:", self.book, " to total verses ", self.chapter)
+                print("Updating Book:", self.book.ExtenedAbbreviation, " to total verses ", self.chapter)
             book.Total = self.chapter
         
         content = "\n".join(html)
@@ -428,7 +427,7 @@ class BibleChapterExtract(WebTree):
         """
         super().show()
         print("Reading:", self.reading)
-        print("Version:", self.version)
+        print("Version:", self.version.Abbreviation, self.version.Year)
         # print("Paras:", len(self.lines))
         # for para in self.lines:
         #     print("   " + para)
@@ -488,7 +487,7 @@ if __name__ == "__main__":
         reference = book + " " + str(chapter)
         print("BibleExtract(\"" + reference + "\", version=\"" + version + "\")")
         bible = BibleChapterExtract(book, chapter, version=version)
-        print("Version:", bible.year, bible.versionName, bible.copyright)
+        print("Version:", bible.version.Year, bible.version.Name, bible.version.Copyright)
         print("Next:", bible.nextChapter)
         print("Previous:", bible.prevChapter)
         # bible.show()
