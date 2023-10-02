@@ -13,8 +13,29 @@ class VersionPOPO():
 
 class BookPOPO():
     
-    def __init__(self, ExtenedAbbreviation, Name) -> None:
-        self.ExtenedAbbreviation = ExtenedAbbreviation
+    def __init__(self, Name) -> None:
+        book = Name.strip()
+        abbreviation = book[0:1]
+        if abbreviation.isdigit():
+            abbreviation += " " + book[1:].strip()[0:3].lower()
+        else:
+            abbreviation = book[0:3].lower()
+        self.ExtenedAbbreviation = abbreviation
         self.Name = Name
+        return
+
+
+class ChapterPOPO():
+    
+    def __init__(self, Name=None, Book=None, Chapter=0) -> None:
+        if Name == None:
+            self.Chapter = Chapter
+            self.Name = Book + " " + str(Chapter)
+            self.Book = BookPOPO(Book)
+        else:
+            self.Name = Name
+            parts = Name.split()
+            self.Chapter = int(parts[-1])
+            self.Book = BookPOPO(" ".join(parts[0:-1]))
         return
 
