@@ -51,8 +51,10 @@ class BookPOPO(CanHaveId):
 
 class ChapterPOPO(CanHaveId):
     
-    def __init__(self, Name=None, Book=None, Chapter=0) -> None:
+    def __init__(self, Name=None, Book=None, Chapter=0, Verses=0, IsComplete=False) -> None:
         super()
+        self.Verses = Verses
+        self.IsComplete = IsComplete
         if Name == None:
             self.Chapter = Chapter
             self.Name = Book + " " + str(Chapter)
@@ -62,5 +64,6 @@ class ChapterPOPO(CanHaveId):
             parts = Name.split()
             self.Chapter = int(parts[-1])
             self.Book = BookPOPO(" ".join(parts[0:-1]))
+        self.Number = self.Chapter
         return
 

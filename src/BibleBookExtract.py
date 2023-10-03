@@ -39,19 +39,39 @@ class BibleBookExtract():
         Identify the next and previous chapters that need to be processed
     """
 
-    def __init__(self, book, version="NIVUK"):  # default to English NIV
-        chapter = BibleChapterExtract(book, 1, version=version, isDebug=True)
+    def __init__(self, book, version="NIVUK", isDebug=False):  # default to English NIV
+        self.isDebug = isDebug
+        self.nextBook = None
+        self.prevBook = None
+        chapter = BibleChapterExtract(book, 1, version=version, isDebug=self.isDebug)
         if chapter:
+            if chapter.prevChapter != None:
+                self.prevBook = chapter.prevChapter.Book.Name
             self.Book = chapter.bibleStoreBook
-            while self.Book == chapter.bibleStoreBook:
-                chapter = BibleChapterExtract(book, chapter.nextChapter.Chapter, version=version)
+            if self.isDebug:
+                if chapter.nextChapter != None:
+                    print("This book:", self.Book.ExtendedAbbreviation, "next book:", chapter.nextChapter.Book.ExtendedAbbreviation)
+                else:
+                    print("This book:", self.Book.ExtendedAbbreviation, "next book:", None)
+            while chapter.nextChapter != None and self.Book.ExtendedAbbreviation == chapter.nextChapter.Book.ExtendedAbbreviation:
+                chapter = BibleChapterExtract(book, chapter.nextChapter.Chapter, version=version, isDebug=self.isDebug)
+                if self.isDebug:
+                    if chapter.nextChapter != None:
+                        print("This book:", self.Book.ExtendedAbbreviation, "next book:", chapter.nextChapter.Book.ExtendedAbbreviation)
+                    else:
+                        print("This book:", self.Book.ExtendedAbbreviation, "next book:", None)
             # as book is now complete, mark it so
             self.makeComplete()
+            if chapter.nextChapter != None:
+                self.nextBook = chapter.nextChapter.Book.Name
         return
 
     @db_session
     def makeComplete(self):
-
+        book = Book[self.Book.id]
+        if self.isDebug:
+            print("Mark book complete:", book.Name)
+        book.IsComplete = True
         return
 
 
@@ -59,7 +79,10 @@ if __name__ == "__main__":
     """
     Test code while debugging.
     """
-    BibleBookExtract("mark", "NLT")
-    # BibleBookExtract("john", "MSG")
+    # BibleBookExtract("mark", "NLT")
+    # book = BibleBookExtract("john", "MSG")
     # BibleBookExtract("phil", "NIVUK")
-    # BibleBookExtract("Revelation", "NIVUK")
+    # book = BibleBookExtract("Revelation", "NIVUK", isDebug=True)
+    book = BibleBookExtract("Genesis", "MSG", isDebug=True)
+    print("Next book:", book.nextBook)
+    print("Previous book:", book.prevBook)

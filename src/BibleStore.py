@@ -25,22 +25,22 @@ class Book(db.Entity):
     chapters = Set('Chapter')
 
 
-class Verse(db.Entity):
-    id = PrimaryKey(int, auto=True)
-    Number = Required(int)
-    Last = Optional(int)
-    Content = Required(LongStr)
-    chapter = Required('Chapter')
-    lookups = Set('Lookup')
-
-
 class Chapter(db.Entity):
     id = PrimaryKey(int, auto=True)
     Number = Required(int)
     Verses = Required(int)
     IsComplete = Required(bool, default=False)
     book = Required(Book)
-    verses = Set(Verse)
+    verses = Set('Verse')
+    lookups = Set('Lookup')
+
+
+class Verse(db.Entity):
+    id = PrimaryKey(int, auto=True)
+    Number = Required(int)
+    Last = Optional(int)
+    Content = Required(LongStr)
+    chapter = Required(Chapter)
     lookups = Set('Lookup')
 
 
