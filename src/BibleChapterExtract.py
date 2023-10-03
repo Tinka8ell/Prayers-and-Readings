@@ -161,15 +161,20 @@ class BibleChapterExtract(WebTree):
         Identify the next and previous chapters that need to be processed
     """
 
-    def __init__(self, book, chapter, version="NIVUK"):  # default to English NIV
+    def __init__(self, book, chapter, version="NIVUK", isDebug=False):  # default to English NIV
+        self.isDebug = isDebug
+        if self.isDebug:
+            print("Extracting chapter:", chapter, "for book:", book, "of version:", version)
         self.version = VersionPOPO(version)
         self.book = BookPOPO(book)
         self.chapter = int(chapter)
-        reading =  self.book.ExtenedAbbreviation + " " + str(chapter)
+        reading = self.book.ExtendedAbbreviation + " " + str(chapter)
         self.reading = reading
         self.lines = []
         self.verses = dict()
         self.indent = ""
+        self.bibleStoreVersion = None
+        
         url = "https://www.biblegateway.com/passage/"
         values = {"search": reading, "version": version}
         super().__init__(url, values=values)
@@ -180,27 +185,133 @@ class BibleChapterExtract(WebTree):
         Overrides the parent class (do nothing) and does the work!
         """
         self._processPublishers()
-        if self.bibleStoreVersion.IsComplete and self.bibleStoreVersion.Year >= self.version.Year:
+        upToDate = self.bibleStoreVersion.IsComplete and self.bibleStoreVersion.Year >= self.version.Year
+        if upToDate:
             print("Version", self.bibleStoreVersion.Abbreviation, "(" + str(self.bibleStoreVersion.Year) + ") is up-to-date")
+            return
+        self._processBook()
+        self.processPreviousNext()
+        if self.bibleStoreBook.IsComplete:
+            print("Book", self.bibleStoreBook.Name, "(" + self.bibleStoreVersion.Abbreviation + ") is up-to-date")
+            if self.nextChapter.Book == self.book:
+                # if next in same book, skip to last chapter
+                self.nextChapter.Chapter = self.bibleStoreBook.chapters
+            if self.prevChapter.Book == self.book:
+                # if previous in same book, skip to first chapter
+                self.nextChapter.Chapter = 1
         else:
-            self.processPreviousNext()
-            if self.bibleStoreBook.IsComplete:
-                print("Book", self.bibleStoreBook.Name, "(" + self.bibleStoreVersion.Abbreviation + ") is up-to-date")
-                if self.nextChapter.Book == self.book:
-                    # if next in same book, skip to last chapter
-                    self.nextChapter.Chapter = self.bibleStoreBook.chapters
-                if self.prevChapter.Book == self.book:
-                    # if previous in same book, skip to first chapter
-                    self.nextChapter.Chapter = 1
-            else:
-                # skip to the "passage text" divisions in the tree -  this may be reduced to one!
-                passages = self.root.findAll('div', class_="passage-text")
-                # print("Found", len(passages), "passages, processing each ...")
-                # what if no passage found?
-                for passage in passages:
-                    self._processPassage(passage)
+            # skip to the "passage text" divisions in the tree -  this may be reduced to one!
+            passages = self.root.findAll('div', class_="passage-text")
+            # print("Found", len(passages), "passages, processing each ...")
+            # what if no passage found?
+            for passage in passages:
+                self._processPassage(passage)
         return
     
+    def _processPublishers(self):
+        if self.isDebug:
+            print("Processing publishers:")
+        publishers = self.root.findAll("div", re.compile("publisher"))
+        for publisher in publishers:
+            for child in publisher.children:
+                match child.name:
+                    case "strong":
+                        _flattenSection(child, "a")
+                        self.version.Name = _cleanText(" ".join(child.stripped_strings))
+                        if self.isDebug:
+                            print("   Version:", self.version.Name)
+                    case "p":
+                        _flattenSection(child, "a")
+                        self.version.Copyright = _cleanText(" ".join(child.stripped_strings))
+                        years = re.findall("\\D\\d\\d\\d\\d\\D", self.version.Copyright)
+                        self.version.Year = int(years[-1][1:5])
+                        if self.isDebug:
+                            print("   Copyright:", self.version.Year, " - ", self.version.Copyright)
+        self._setBibleStoreVersion()
+        return
+
+    @db_session
+    def _setBibleStoreVersion(self):
+        if self.isDebug:
+            print("Getting version:", self.version.Abbreviation)
+        versions = select(v for v in Version if v.Abbreviation == self.version.Abbreviation)[:]
+        if len(versions) == 0:
+            if self.isDebug:
+                print("Creating Version:", self.version.Abbreviation)
+            version = Version(Abbreviation = self.version.Abbreviation, Name = self.version.Name, Year = self.version.Year, Copyright = self.version.Copyright)
+            commit()
+        else:
+            version = versions[0]
+            for v in versions: 
+                if v.Year > version.Year: # select most recent
+                    version = v
+            # Probabaly not required any more, but here in case needs updating
+            version.Name = self.version.Name
+            version.Year = self.version.Year
+            version.Copyright = self.version.Copyright
+        
+        self.bibleStoreVersion = VersionPOPO(Abbreviation=version.Abbreviation, Name=version.Name, Year=version.Year, Copyright=version.Copyright, IsComplete=version.IsComplete)
+        self.bibleStoreVersion.setId(version.id)
+        if (self.isDebug):
+            print("bibleStoreVersion:", self.bibleStoreVersion.id, self.bibleStoreVersion.Abbreviation, self.bibleStoreVersion.IsComplete)
+        return
+
+    def processPreviousNext(self):
+        """
+        Get previous and next chapter names if exist
+        """
+        if self.isDebug:
+            print("Processing previous and next")
+        self.nextChapter = None
+        self.prevChapter = None
+        pages = self.root.findAll("div",  class_="prev-next")
+        for page in pages:
+            links = page.findAll("a", class_="next-chapter")
+            for link in links:
+                self.nextChapter = ChapterPOPO(Name=link.attrs["title"])
+                if self.isDebug:
+                    print("Next chapter:", self.nextChapter.Name)
+            links = page.findAll("a", class_="prev-chapter")
+            for link in links:
+                self.prevChapter = ChapterPOPO(Name=link.attrs["title"])
+                if self.isDebug:
+                    print("Prev chapter:", self.prevChapter.Name)
+        return
+    
+    def _processBook(self):
+        if self.isDebug:
+            print("Processing book:")
+        books = self.root.findAll("h1",  class_="passage-display")
+        book = books[0]
+        names = book.findAll("div",  class_="dropdown-display-text")
+        name = names[0]
+        self.book = BookPOPO(_cleanText(" ".join(name.stripped_strings)))
+        if self.isDebug:
+            print("   Name:", self.book.Name)
+        self._setBibleStoreBook()
+        return
+
+    @db_session
+    def _setBibleStoreBook(self):
+        book = None
+        if self.isDebug:
+            print("Getting book:", self.book.ExtendedAbbreviation)
+            print("for version:", self.bibleStoreVersion.Abbreviation)
+        version = Version[self.bibleStoreVersion.id]
+        book = Book.get(ExtendedAbbreviation = self.book.ExtendedAbbreviation, version = version)
+        if book == None:
+            if self.isDebug:
+                print("Creating Book:", self.book.ExtendedAbbreviation, " - ", self.book.Name, "for version:", self.bibleStoreVersion.Abbreviation)
+            book = Book(ExtendedAbbreviation = self.book.ExtendedAbbreviation, Name = self.book.Name, Total = 0, version = version)
+            commit()
+
+        self.bibleStoreBook = BookPOPO(Name=book.Name)
+        self.bibleStoreBook.setFields(Name=book.Name, Total=book.Total, IsComplete=book.IsComplete, versionId=book.version.id)
+        self.bibleStoreBook.setId(book.id)
+        if (self.isDebug):
+            print("bibleStoreBook:", self.bibleStoreBook.id, self.bibleStoreBook.ExtendedAbbreviation, self.bibleStoreBook.IsComplete)
+        return
+
     def _processPassage(self, passage):
         # print("passage:", passage.prettify()) # debug
         # remove footnote divisions
@@ -221,77 +332,6 @@ class BibleChapterExtract(WebTree):
         self._generateVerses()
         return
     
-    def processPreviousNext(self, isDebug=False):
-        """
-        Get previous and next chapter names if exist
-        """
-        self.nextChapter = None
-        self.prevChapter = None
-        pages = self.root.findAll("div",  class_="prev-next")
-        for page in pages:
-            links = page.findAll("a", class_="next-chapter")
-            for link in links:
-                self.nextChapter = ChapterPOPO(Name=link.attrs["title"])
-                if isDebug:
-                    print("Next chapter:", self.nextChapter)
-            links = page.findAll("a", class_="prev-chapter")
-            for link in links:
-                self.prevChapter = ChapterPOPO(Name=link.attrs["title"])
-                if isDebug:
-                    print("Prev chapter:", self.prevChapter)
-        self.bibleStoreBook = self._getBibelStoreBook(isDebug=isDebug)
-        return
-    
-    def _processPublishers(self, isDebug=False):
-        publishers = self.root.findAll("div", re.compile("publisher"))
-        for publisher in publishers:
-            for child in publisher.children:
-                match child.name:
-                    case "strong":
-                        _flattenSection(child, "a")
-                        self.version.Name = _cleanText(" ".join(child.stripped_strings))
-                        if isDebug:
-                            print("   Version:", self.version.Name)
-                    case "p":
-                        _flattenSection(child, "a")
-                        self.version.Copyright = _cleanText(" ".join(child.stripped_strings))
-                        years = re.findall("\\D\\d\\d\\d\\d\\D", self.version.Copyright)
-                        self.version.Year = int(years[-1][1:5])
-                        if isDebug:
-                            print("   Copyright:", self.version.Year, " - ", self.version.Copyright)
-        self.bibleStoreVersion = self._getBibelStoreVersion(isDebug=isDebug)
-        return
-
-    @db_session
-    def _getBibelStoreVersion(self, isDebug=False):
-        versions = select(v for v in Version if v.Abbreviation == self.version.Abbreviation)[:]
-        if len(versions) == 0:
-            if isDebug:
-                print("Creating Version:", self.version.Abbreviation)
-            version = Version(Abbreviation = self.version.Abbreviation, Name = self.version.Name, Year = self.version.Year, Copyright = self.version.Copyright)
-        else:
-            version = versions[0]
-            for v in versions: 
-                if v.Year > version.Year: # select most recent
-                    version = v
-            # Probabaly not required any more, but here in case needs updating
-            version.Name = self.version.Name
-            version.Year = self.version.Year
-            version.Copyright = self.version.Copyright
-        return version
-
-    @db_session
-    def _getBibelStoreBook(self, isDebug=False):
-        books = select(b for b in Book if b.ExtenedAbbreviation == self.book.ExtenedAbbreviation and b.version == self.bibleStoreVersion)[:]
-        if len(books) > 0:
-            book = books[0]
-        else:
-            if isDebug:
-                print("Creating Book:", self.book.ExtenedAbbreviation, " - ", self.book.Name)
-            book = Book(ExtenedAbbreviation = self.book.ExtenedAbbreviation, Name = self.book.Name, Total = 0, version = self.bibleStoreVersion)
-
-        return book
-
     def _decompress(self, passage, prefix, poetry=""):
         if passage.name:
             attributes =  ""
@@ -391,31 +431,33 @@ class BibleChapterExtract(WebTree):
                     indent = _getIndentAndAddText(indent, html, key, text)
         _endIndent(isSpan, indent, html)
         self._saveVerse(verseNumber, html)
+        self.makeComplete()
         return
-    
+
     @db_session
-    def _saveVerse(self, verseNumber, html, isDebug=False):
+    def _saveVerse(self, verseNumber, html):
         self.verses[verseNumber] = html
         numbers = verseNumber.split("-")
         firstNumber = int(numbers[0])
         lastNumber = None
         if len(numbers) > 1:
             lastNumber = int(numbers[1])
-
-        chapters = select(c for c in Chapter if c.Number == self.chapter and c.book == self.bibleStoreBook)[:]
-        if len(chapters) > 0:
-            chapter = chapters[0]
-        else:
-            if isDebug:
+        book = Book[self.bibleStoreBook.id]
+        if self.isDebug:
+            print("Save verse", firstNumber, "last:", lastNumber)
+        chapter = Chapter.get(Number = self.chapter, book = book)
+        if chapter == None:
+            if self.isDebug:
                 print("Creating Chapter:", self.chapter)
-            chapter = Chapter(Number = self.chapter, Verses = 0, book = self.bibleStoreBook)
+            chapter = Chapter(Number = self.chapter, Verses = 0, book = book)
+            commit()
         if self.bibleStoreBook.Total < self.chapter:
-            if isDebug:
-                print("Updating Book:", self.book.ExtenedAbbreviation, " to total verses ", self.chapter)
+            if self.isDebug:
+                print("Updating Book:", self.book.ExtendedAbbreviation, " to total verses ", self.chapter)
             self.bibleStoreBook.Total = self.chapter
         
         content = "\n".join(html)
-        if isDebug:
+        if self.isDebug:
             print("Creating Verse:", verseNumber)
         verses = select(v for v in Verse if v.Number == firstNumber and v.Last == lastNumber and v.chapter == chapter)[:]
         if len(verses) > 0: # re-use old record
@@ -426,12 +468,12 @@ class BibleChapterExtract(WebTree):
         if not lastNumber:
             lastNumber = firstNumber
         if chapter.Verses < lastNumber:
-            if isDebug:
+            if self.isDebug:
                 print("Updating Chapter:", self.chapter, " to total verses ", lastNumber)
             chapter.Verses = lastNumber
 
         for verseNumber in range (firstNumber, lastNumber + 1):
-            if isDebug:
+            if self.isDebug:
                 print("Creating Lookup for Verse:", verseNumber)
             lookups = select(l for l in Lookup if l.Number == verseNumber and l.chapter == chapter)[:]
             if len(lookups) > 0: # re-use old record
@@ -439,6 +481,11 @@ class BibleChapterExtract(WebTree):
                 lookup.verse = verse
             else: # create new record
                 lookup = Lookup(Number = verseNumber, chapter = chapter, verse = verse)
+        return
+    
+    @db_session
+    def makeComplete(self):
+        
         return
     
     def show(self):
@@ -509,11 +556,11 @@ if __name__ == "__main__":
         bible = BibleChapterExtract(book, chapter, version=version)
         print("Version:", bible.version.Year, bible.version.Name, bible.version.Copyright)
         if bible.nextChapter:
-            print("Next:", bible.nextChapter.Book.Name, bible.nextChapter.Chapter)
+            print("Next:", bible.nextChapter.Name)
         else:
             print("No next chapter")
         if bible.prevChapter:
-            print("Previous:", bible.prevChapter.Book.Name, bible.prevChapter.Chapter)
+            print("Previous:", bible.prevChapter.Name)
         else:
             print("No previous chapter")
             
