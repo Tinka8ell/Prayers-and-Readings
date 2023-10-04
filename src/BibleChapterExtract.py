@@ -188,12 +188,14 @@ class BibleChapterExtract(WebTree):
         self._processPublishers()
         upToDate = self.bibleStoreVersion.IsComplete and self.bibleStoreVersion.Year >= self.version.Year
         if upToDate:
-            print("Version", self.bibleStoreVersion.Abbreviation, "(" + str(self.bibleStoreVersion.Year) + ") is up-to-date")
+            if self.isDebug:
+                print("Version", self.bibleStoreVersion.Abbreviation, "(" + str(self.bibleStoreVersion.Year) + ") is up-to-date")
             return
         self._processBook()
         self._processPreviousNext()
         if self.bibleStoreBook.IsComplete:
-            print("Book", self.bibleStoreBook.Name, "(" + self.bibleStoreVersion.Abbreviation + ") is up-to-date")
+            if self.isDebug:
+                print("Book", self.bibleStoreBook.Name, "(" + self.bibleStoreVersion.Abbreviation + ") is up-to-date")
             if self.nextChapter != None and self.nextChapter.Book.ExtendedAbbreviation == self.book.ExtendedAbbreviation:
                 # if next in same book, skip to last chapter
                 self.nextChapter.Chapter = self.bibleStoreBook.Total
@@ -204,7 +206,6 @@ class BibleChapterExtract(WebTree):
             self._setBibleStoreChapter()
             # skip to the "passage text" divisions in the tree -  this may be reduced to one!
             passages = self.root.findAll('div', class_="passage-text")
-            # print("Found", len(passages), "passages, processing each ...")
             # what if no passage found?
             for passage in passages:
                 self._processPassage(passage)
@@ -361,8 +362,6 @@ class BibleChapterExtract(WebTree):
         _removeSection(passage, "div", "footnotes")
         # remove crossref divisions
         _removeSection(passage, "div", re.compile("crossrefs"))
-        # remove publisher info divisions - this may be used to test for version changes!
-        # self.processPublishers(passage)
         # Publisher info is not in passage sections, so not required here ...
         _removeSection(passage, "div", re.compile("publisher"))
         # print("cleaned passage:", passage.prettify()) # debug
@@ -424,7 +423,6 @@ class BibleChapterExtract(WebTree):
 
     def _generateVerses(self):
         isDebug = self.isDebug
-        self.isDebug = False
         verseNumber = ""
         (html, isHeading, isSpan) = ([], False, False)
         indent = ""
@@ -476,7 +474,6 @@ class BibleChapterExtract(WebTree):
                     indent = _getIndentAndAddText(indent, html, key, text)
         _endIndent(isSpan, indent, html)
         self._saveVerse(verseNumber, html)
-        self.isDebug = isDebug
         self.makeComplete()
         return
 
@@ -536,13 +533,6 @@ class BibleChapterExtract(WebTree):
         super().show()
         print("Reading:", self.reading)
         print("Version:", self.version.Abbreviation, self.version.Year)
-        # print("Paras:", len(self.lines))
-        # for para in self.lines:
-        #     print("   " + para)
-        # print("Verses:", len(self.verses))
-        # for verseNumber in self.verses.keys():
-        #     print("Verse " + verseNumber + ":")
-        #     print("".join(self.verses[verseNumber]))
         print("\n" + self.getPassage(1, 3))
         print("\n" + self.getPassage(4, 6))
         return
@@ -561,36 +551,11 @@ class BibleChapterExtract(WebTree):
             passage += "</p>"
         return "<h1> Verses " + str(first) + " to " + str(last) + " </h1>\n" + passage
 
-    def showPassage(self):
-        """
-        Display passage for debugging.
-        """
-        for line in self.lines:
-            print(">>>", line)
-        print("reading:", self.reading)
-        return
-
 
 if __name__ == "__main__":
     """
     Test code while debugging.
     """
-    '''
-    text = "Sovereign Lord , for the awesome day of the Lord 's judgment is near. The"
-    print(text, re.sub(r"(\w)\s+([!\"()-;:'.,?])", r"\1\2", text))
-    text = 'Then he said, "Anyone with ears to hear should listen and understand."'
-    print(text, re.sub(r"(\w)\s+([!\"()-;:'.,?])", r"\1\2", text))
-    '''
-    '''
-    bible = BibleExtract("Psalm 147:2â€“3", version="NLT")
-    bible.showPassage()
-    print()
-    bible.htmlParas(None)
-    print()
-    bible.show()
-    '''
-    # _findbad("“’”")
-    # _findbad("Let him kiss me with the kisses of his mouth&nbsp;–")
     def testIt(book, chapter, version):
         reference = book + " " + str(chapter)
         print("BibleExtract(\"" + reference + "\", version=\"" + version + "\")")
@@ -604,8 +569,6 @@ if __name__ == "__main__":
             print("Previous:", bible.prevChapter.Name)
         else:
             print("No previous chapter")
-            
-        # bible.show()
         
     # testIt("john", 1, "NLT")
     # testIt("psalm", 3, "NLT")
