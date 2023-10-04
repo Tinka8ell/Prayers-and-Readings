@@ -193,10 +193,10 @@ class BibleChapterExtract(WebTree):
         self._processPreviousNext()
         if self.bibleStoreBook.IsComplete:
             print("Book", self.bibleStoreBook.Name, "(" + self.bibleStoreVersion.Abbreviation + ") is up-to-date")
-            if self.nextChapter.Book.ExtendedAbbreviation == self.book.ExtendedAbbreviation:
+            if self.nextChapter != None and self.nextChapter.Book.ExtendedAbbreviation == self.book.ExtendedAbbreviation:
                 # if next in same book, skip to last chapter
                 self.nextChapter.Chapter = self.bibleStoreBook.Total
-            if self.prevChapter.Book.ExtendedAbbreviation == self.book.ExtendedAbbreviation:
+            if self.prevChapter != None and self.prevChapter.Book.ExtendedAbbreviation == self.book.ExtendedAbbreviation:
                 # if previous in same book, skip to first chapter
                 self.nextChapter.Chapter = 1
         else:

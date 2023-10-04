@@ -18,6 +18,7 @@
 
 from BibleStore import *
 from BibleChapterExtract import BibleChapterExtract
+from time import sleep
 
 class BibleBookExtract():
     """
@@ -39,31 +40,33 @@ class BibleBookExtract():
         Identify the next and previous chapters that need to be processed
     """
 
-    def __init__(self, book, version="NIVUK", isDebug=False):  # default to English NIV
+    def __init__(self, book, version="NIVUK", delay=1, isDebug=False):  # default to English NIV
         self.isDebug = isDebug
         self.nextBook = None
         self.prevBook = None
         chapter = BibleChapterExtract(book, 1, version=version, isDebug=self.isDebug)
-        if chapter:
-            if chapter.prevChapter != None:
-                self.prevBook = chapter.prevChapter.Book.Name
-            self.Book = chapter.bibleStoreBook
+        self.Book = chapter.bibleStoreBook
+        if chapter.prevChapter != None:
+            self.prevBook = chapter.prevChapter.Book.Name
+        if self.isDebug:
+            if chapter.nextChapter != None:
+                print("This book:", self.Book.ExtendedAbbreviation, "next book:", chapter.nextChapter.Book.ExtendedAbbreviation)
+            else:
+                print("This book:", self.Book.ExtendedAbbreviation, "next book:", None)
+        while chapter.nextChapter != None and self.Book.ExtendedAbbreviation == chapter.nextChapter.Book.ExtendedAbbreviation:
+            sleep(delay) # toggle so webserver doesn't get upset with us being a robot!
+            chapter = BibleChapterExtract(book, chapter.nextChapter.Chapter, version=version, isDebug=self.isDebug)
             if self.isDebug:
                 if chapter.nextChapter != None:
                     print("This book:", self.Book.ExtendedAbbreviation, "next book:", chapter.nextChapter.Book.ExtendedAbbreviation)
                 else:
                     print("This book:", self.Book.ExtendedAbbreviation, "next book:", None)
-            while chapter.nextChapter != None and self.Book.ExtendedAbbreviation == chapter.nextChapter.Book.ExtendedAbbreviation:
-                chapter = BibleChapterExtract(book, chapter.nextChapter.Chapter, version=version, isDebug=self.isDebug)
-                if self.isDebug:
-                    if chapter.nextChapter != None:
-                        print("This book:", self.Book.ExtendedAbbreviation, "next book:", chapter.nextChapter.Book.ExtendedAbbreviation)
-                    else:
-                        print("This book:", self.Book.ExtendedAbbreviation, "next book:", None)
-            # as book is now complete, mark it so
-            self.makeComplete()
-            if chapter.nextChapter != None:
-                self.nextBook = chapter.nextChapter.Book.Name
+        if chapter.nextChapter != None:
+            self.nextBook = chapter.nextChapter.Book.Name
+        # as book is now complete, mark it so
+        self.makeComplete()
+        # now remove any old ones
+        self.deleteOldBooks()
         return
 
     @db_session
@@ -72,6 +75,27 @@ class BibleBookExtract():
         if self.isDebug:
             print("Mark book complete:", book.Name)
         book.IsComplete = True
+        return
+
+    @db_session
+    def deleteOldBooks(self):
+        book = Book[self.Book.id]
+        version = book.version
+        abbreviation = version.Abbreviation
+        year = version.Year
+        if self.isDebug:
+            print("Deleting old books:", book.Name, book.ExtendedAbbreviation, abbreviation, "not year:", year)
+        allVersions = select(v for v in Version if v.Abbreviation == abbreviation)[:]
+        count = 0
+        for otherVersion in allVersions:
+            if otherVersion.Year != year:
+                count += 1
+                oldBook = Book.get(ExtendedAbbreviation = book.ExtendedAbbreviation, version = otherVersion)
+                if self.isDebug:
+                    print("Deleting old book:", book.Name, book.ExtendedAbbreviation, otherVersion.Abbreviation, otherVersion.Year)
+                oldBook.delete()
+        if self.isDebug and count == 0:
+            print("No old books found")
         return
 
 
