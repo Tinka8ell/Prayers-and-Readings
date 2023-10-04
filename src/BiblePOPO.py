@@ -24,6 +24,19 @@ class VersionPOPO(CanHaveId):
         return
 
 
+def _abbreviateBookName(name):
+    """
+    Consider 1st 5 characters, less trailing spaces as an alternative.
+    Could add a "look-up" for books, matching key + "*" if only one exisit 
+       or first found (not so good!)
+    """
+    abbreviation = name.strip()[0:3].lower()
+    if abbreviation == 'phi': # as it is ambiguous, make it longer
+        abbreviation = name.strip()[0:5].lower() # allow for "Philemon" instead of "Philipians"!
+    if abbreviation == 'jud': # as it is ambiguous, make it longer
+        abbreviation = name.strip()[0:4].lower() # allow for "Judges" instead of "Jude"!
+    return abbreviation
+
 class BookPOPO(CanHaveId):
     
     def __init__(self, Name) -> None:
@@ -31,9 +44,9 @@ class BookPOPO(CanHaveId):
         book = Name.strip()
         abbreviation = book[0:1]
         if abbreviation.isdigit():
-            abbreviation += " " + book[1:].strip()[0:3].lower()
+            abbreviation += " " + _abbreviateBookName(book[1:])
         else:
-            abbreviation = book[0:3].lower()
+            abbreviation = _abbreviateBookName(book)
         self.ExtendedAbbreviation = abbreviation
         self.Name = Name
         self.Total = 0

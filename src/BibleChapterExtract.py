@@ -66,6 +66,7 @@ def _cleanText(text, xmlReplace=False):
             bytes([226, 128, 148]).decode('utf-8'): " - ",  # remove funny dashes
             bytes([194, 174]).decode('utf-8'): " (R) ",  # replace registered symbol
             bytes([194, 169]).decode('utf-8'): " (C) ",  # replace copyright symbol
+            bytes([195, 169]).decode('utf-8'): "e",  # replace e - ecute with e
             bytes([226, 128, 175]).decode('utf-8'): " ... ",  # replace funny ellipses
             "\n": " ",  # remove excess new-lines
             "  ": " ",  # remove excess spaces
@@ -198,7 +199,7 @@ class BibleChapterExtract(WebTree):
                 self.nextChapter.Chapter = self.bibleStoreBook.Total
             if self.prevChapter != None and self.prevChapter.Book.ExtendedAbbreviation == self.book.ExtendedAbbreviation:
                 # if previous in same book, skip to first chapter
-                self.nextChapter.Chapter = 1
+                self.prevChapter.Chapter = 1
         else:
             self._setBibleStoreChapter()
             # skip to the "passage text" divisions in the tree -  this may be reduced to one!
@@ -261,8 +262,22 @@ class BibleChapterExtract(WebTree):
         if self.isDebug:
             print("Processing book:")
         books = self.root.findAll("h1",  class_="passage-display")
+        if len(books) == 0:
+            # error! no book title..
+            message = "*** Error getting book for title for " + self.reading + " ***"
+            print(message)
+            print(self.root.prettify())
+            print(message)
+            raise Exception(message)
         book = books[0]
         names = book.findAll("div",  class_="dropdown-display-text")
+        if len(books) == 0:
+            # error! no book title..
+            message = "*** Error getting name for title for " + self.reading + " ***"
+            print(message)
+            print(book.prettify())
+            print(message)
+            raise Exception(message)
         name = names[0]
         bookAndChapter = _cleanText(" ".join(name.stripped_strings))
         chapterRemoved = bookAndChapter.split()[0:-1]
@@ -468,7 +483,11 @@ class BibleChapterExtract(WebTree):
     @db_session
     def _saveVerse(self, verseNumber, html):
         self.verses[verseNumber] = html
-        numbers = verseNumber.split("-")
+        numbers = [verseNumber,]
+        if len(numbers) == 1:
+            numbers = numbers[0].split("-") # look for range
+        if len(numbers) == 1:
+            numbers = numbers[0].split(",") # look for pair
         firstNumber = int(numbers[0])
         lastNumber = None
         if len(numbers) > 1:
@@ -575,7 +594,7 @@ if __name__ == "__main__":
     def testIt(book, chapter, version):
         reference = book + " " + str(chapter)
         print("BibleExtract(\"" + reference + "\", version=\"" + version + "\")")
-        bible = BibleChapterExtract(book, chapter, version=version)
+        bible = BibleChapterExtract(book, chapter, version=version, isDebug=True)
         print("Version:", bible.version.Year, bible.version.Name, bible.version.Copyright)
         if bible.nextChapter:
             print("Next:", bible.nextChapter.Name)
@@ -591,11 +610,13 @@ if __name__ == "__main__":
     # testIt("john", 1, "NLT")
     # testIt("psalm", 3, "NLT")
     # testIt("psalm", 3, "NIVUK")
-    testIt("john", 3, "MSG")
+    # testIt("john", 3, "MSG")
     # testIt("john", 3, "NLT")
     # testIt("john", 3, "NIVUK")
     # testIt("phil", 2, "NIVUK")
     # testIt("song", 1, "NLT")
     # testIt("song", 1, "NIVUK")
-    testIt("gen", 1, "NIVUK")
-    testIt("2 Chr", 1, "NLT")
+    # testIt("gen", 1, "NIVUK")
+    # testIt("2 Chr", 1, "NLT")
+    # testIt("Acts", 27, "MSG")
+    testIt("Phil", 1, "MSG")
