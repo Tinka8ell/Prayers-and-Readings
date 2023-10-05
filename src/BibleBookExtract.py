@@ -46,27 +46,31 @@ class BibleBookExtract():
         self.prevBook = None
         chapter = BibleChapterExtract(book, 1, version=version, isDebug=self.isDebug)
         self.Book = chapter.bibleStoreBook
-        if chapter.prevChapter != None:
-            self.prevBook = chapter.prevChapter.Book.Name
-        if self.isDebug:
-            if chapter.nextChapter != None:
-                print("This book:", self.Book.ExtendedAbbreviation, "next book:", chapter.nextChapter.Book.ExtendedAbbreviation)
-            else:
-                print("This book:", self.Book.ExtendedAbbreviation, "next book:", None)
-        while chapter.nextChapter != None and self.Book.ExtendedAbbreviation == chapter.nextChapter.Book.ExtendedAbbreviation:
-            sleep(delay) # toggle so webserver doesn't get upset with us being a robot!
-            chapter = BibleChapterExtract(book, chapter.nextChapter.Chapter, version=version, isDebug=self.isDebug)
+        if self.Book == None:
+            if self.isDebug:
+                print("Nothing done as all up to date")
+        else: # actually did something
+            if chapter.prevChapter != None:
+                self.prevBook = chapter.prevChapter.Book.Name
             if self.isDebug:
                 if chapter.nextChapter != None:
                     print("This book:", self.Book.ExtendedAbbreviation, "next book:", chapter.nextChapter.Book.ExtendedAbbreviation)
                 else:
                     print("This book:", self.Book.ExtendedAbbreviation, "next book:", None)
-        if chapter.nextChapter != None:
-            self.nextBook = chapter.nextChapter.Book.Name
-        # as book is now complete, mark it so
-        self.makeComplete()
-        # now remove any old ones
-        self.deleteOldBooks()
+            while chapter.nextChapter != None and self.Book.ExtendedAbbreviation == chapter.nextChapter.Book.ExtendedAbbreviation:
+                sleep(delay) # toggle so webserver doesn't get upset with us being a robot!
+                chapter = BibleChapterExtract(book, chapter.nextChapter.Chapter, version=version, isDebug=self.isDebug)
+                if self.isDebug:
+                    if chapter.nextChapter != None:
+                        print("This book:", self.Book.ExtendedAbbreviation, "next book:", chapter.nextChapter.Book.ExtendedAbbreviation)
+                    else:
+                        print("This book:", self.Book.ExtendedAbbreviation, "next book:", None)
+            if chapter.nextChapter != None:
+                self.nextBook = chapter.nextChapter.Book.Name
+            # as book is now complete, mark it so
+            self.makeComplete()
+            # now remove any old ones
+            self.deleteOldBooks()
         return
 
     @db_session

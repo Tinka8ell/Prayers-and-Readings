@@ -175,6 +175,9 @@ class BibleChapterExtract(WebTree):
         self.verses = dict()
         self.indent = ""
         self.bibleStoreVersion = None
+        self.bibleStoreBook = None
+        self.nextChapter = None
+        self.prevChapter = None
         
         url = "https://www.biblegateway.com/passage/"
         values = {"search": reading, "version": version}

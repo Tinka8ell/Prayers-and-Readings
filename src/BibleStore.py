@@ -1,7 +1,10 @@
 # Bible Store contains all the active view of the Bible content
 
 from pony.orm import *
+from os import environ as env
+from dotenv import load_dotenv
 
+load_dotenv()
 db = Database()
 
 
@@ -51,6 +54,17 @@ class Lookup(db.Entity):
     verse = Required(Verse)
 
 
-
-ok = db.bind(provider='mysql', host='localhost', user='root', passwd='toor', db='bible_store')
-ok = db.generate_mapping(create_tables=True)
+_hostname = env.get('HOSTNAME')
+if _hostname == None:
+    raise Exception("[error]: 'HOSTNAME' environment variable required")
+_user = env.get('HOSTUSER')
+if _user == None:
+    raise Exception("[error]: 'HOSTUSER' environment variable required")
+_password = env.get('PASSWORD')
+if _password == None:
+    raise Exception("[error]: 'PASSWORD' environment variable required")
+_database = env.get('DATABASE')
+if _database == None:
+    raise Exception("[error]: 'DATABASE' environment variable required")
+db.bind(provider='mysql', host=_hostname, user=_user, passwd=_password, db=_database)
+db.generate_mapping(create_tables=True)

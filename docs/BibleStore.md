@@ -75,3 +75,23 @@ Where Extended abreiviation is:
 There is a weakness here, as it is possible for two nearby (non-contiguous) references 
 to overlap in some versions (e.g. MSG), but we wil have to live with it to best format 
 contiguous verse in the best light (paragraphing and indentations)
+
+## Database Security
+
+To keep the database secure, we will use a .env file to hold secrets.
+Currently this will include:
+
+| Variable | Used for               |
+| -------- | ---------------------- |
+| HOSTNAME | url to the SQL server  |
+| HOSTUSER | User to use for access |
+| PASSWORD | Password for that user |
+| DATABASE | The database name      |
+
+So an axample .env file for testing might hold:
+```
+HOSTNAME=localhost
+HOSTUSER=root
+PASSWORD=toor
+DATABASE=bible_store
+```
