@@ -29,3 +29,7 @@ Using templates to generate pages.
       1. If generate >= today: generate new
       1. Else: *don't* generate
    1. Else: generate with now date
+
+## next steps
+Morking out how to store the bible data to better retrieve the bible verse on demand.
+using this [data format](./docs/BibleStore.md)
