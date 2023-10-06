@@ -26,7 +26,7 @@ parser = argparse.ArgumentParser(description='Parse and import bible versions if
 parser.add_argument('versions', metavar='version', nargs='+',
                     help='an abbreiviation for a version of the bible')
 parser.add_argument('--delay', dest='delay', action='store',
-                    default=5,
+                    default=5, type=int,
                     help='seconds delay between web requests (default: 5)')
 parser.add_argument('--verbose', dest='isDebug', action='store_const',
                     const=True, default=False, 

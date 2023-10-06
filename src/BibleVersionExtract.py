@@ -17,7 +17,7 @@ class BibleVersionExtract():
 
     def __init__(self, version="NIVUK", delay=1, isDebug=False):  # default to English NIV
         self.isDebug = isDebug
-        bookDelay = 5 * delay # pause a little longer between books?
+        bookDelay = 5 * int(delay) # pause a little longer between books?
         extractDebug = self.isDebug
         book = BibleBookExtract("Mark", version=version, isDebug=extractDebug)
         if book.Book == None:
