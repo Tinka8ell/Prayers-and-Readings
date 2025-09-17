@@ -98,6 +98,8 @@ class BibleReading(WebTree):
         headings and titles.
         Create a list of paragraphs and store in self.paras.
         """
+        if self.root == None:
+            raise Exception("*** Error getting web page for " + self.reading + " ***")
         paras = []
         # skip to the "passage text" divisions in the tree
         passages = self.root.findAll('div', class_="passage-text")
@@ -190,9 +192,9 @@ if __name__ == "__main__":
     """
     Test code while debugging.
     """
-    '''
+    r'''
     text = "Sovereign Lord , for the awesome day of the Lord 's judgment is near. The"
-    print(text, re.sub(r"(\w)\s+([!\"()-;:'.,?])", r"\1\2", text))
+    print(text, re.sub(r'(\w)\s+([!\"()\-\;:\'\.,\?])', r"\1\2", text))  # type: ignore
     text = 'Then he said, "Anyone with ears to hear should listen and understand."'
     print(text, re.sub(r"(\w)\s+([!\"()-;:'.,?])", r"\1\2", text))
     '''

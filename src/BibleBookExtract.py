@@ -19,6 +19,7 @@
 from BibleStore import *
 from BibleChapterExtract import BibleChapterExtract
 from time import sleep
+from pony.orm import db_session, select
 
 class BibleBookExtract():
     """
@@ -75,6 +76,8 @@ class BibleBookExtract():
 
     @db_session
     def makeComplete(self):
+        if self.Book == None:
+            return
         book = Book[self.Book.id]
         if self.isDebug:
             print("Mark book complete:", book.Name)
@@ -83,6 +86,8 @@ class BibleBookExtract():
 
     @db_session
     def deleteOldBooks(self):
+        if self.Book == None:
+            return
         book = Book[self.Book.id]
         version = book.version
         abbreviation = version.Abbreviation

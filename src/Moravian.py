@@ -24,6 +24,7 @@ class Moravian(WebTree):
 
     def __init__(self, url, version="NIVUK"):  # default to English NIV
         self.version = version
+        self.prefix = "/"
         super().__init__(url)
         self.p1 = '''<!DOCTYPE html>
 <html>
@@ -52,7 +53,11 @@ class Moravian(WebTree):
         other stuff
         End of div (textwidget)
         '''
+        if self.root == None:
+            raise Exception("*** Error getting web page for " + self.url + " ***")  
         textwidget = self.root.find('div', class_="textwidget")
+        if textwidget == None:
+            raise Exception("*** Error finding textwidget in page for " + self.url + " ***")
         # print(textwidget.prettify()) # debug
         # first para is date, so get the string and convert
         pageDate = textwidget.p.string
@@ -293,9 +298,10 @@ class Moravian(WebTree):
             # print(f"'{passage}'")
             html.append(self.getHtmlReading(passage, tag="h3", showdivs=showdivs))
         html.append(tagText("Prayer", "h3"))
-        paras = self.prayer.split("\n")  # in case separate paragraphs
-        for para in paras:  # should be at least one!
-            html.append(tagText(para, "p"))
+        if self.prayer:
+            paras = self.prayer.split("\n")  # in case separate paragraphs
+            for para in paras:  # should be at least one!
+                html.append(tagText(para, "p"))
         if showdivs:
             html.append("<hr/>")
         return '\n'.join(html)

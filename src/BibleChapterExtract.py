@@ -23,6 +23,7 @@ import re
 from WebTree import WebTree
 from BibleStore import *
 from BiblePOPO import VersionPOPO, BookPOPO, ChapterPOPO
+from pony.orm import db_session, commit, select  # <-- Add this import
 
 
 def _findbad(text, isDebug=False):
@@ -169,8 +170,7 @@ class BibleChapterExtract(WebTree):
         self.version = VersionPOPO(version)
         self.book = BookPOPO(book)
         self.chapter = int(chapter)
-        reading = self.book.ExtendedAbbreviation + " " + str(chapter)
-        self.reading = reading
+        self.reading = self.book.ExtendedAbbreviation + " " + str(chapter)
         self.lines = []
         self.verses = dict()
         self.indent = ""
@@ -180,7 +180,7 @@ class BibleChapterExtract(WebTree):
         self.prevChapter = None
         
         url = "https://www.biblegateway.com/passage/"
-        values = {"search": reading, "version": version}
+        values = {"search": self.reading, "version": version}
         super().__init__(url, values=values)
         return
 
@@ -188,7 +188,11 @@ class BibleChapterExtract(WebTree):
         """
         Overrides the parent class (do nothing) and does the work!
         """
+        if self.root == None:
+            raise Exception("*** Error getting web page for " + self.reading + " ***")
         self._processPublishers()
+        if self.bibleStoreVersion == None:
+            raise Exception("*** Error getting version for " + self.reading + " ***")
         upToDate = self.bibleStoreVersion.IsComplete and self.bibleStoreVersion.Year >= self.version.Year
         if upToDate:
             if self.isDebug:
@@ -196,6 +200,8 @@ class BibleChapterExtract(WebTree):
             return
         self._processBook()
         self._processPreviousNext()
+        if self.bibleStoreBook == None:
+            raise Exception("*** Error getting book for " + self.reading + " ***")
         if self.bibleStoreBook.IsComplete:
             if self.isDebug:
                 print("Book", self.bibleStoreBook.Name, "(" + self.bibleStoreVersion.Abbreviation + ") is up-to-date")
@@ -215,6 +221,8 @@ class BibleChapterExtract(WebTree):
         return
     
     def _processPublishers(self):
+        if self.root == None:
+            raise Exception("*** Error getting web page for " + self.reading + " ***")
         if self.isDebug:
             print("Processing publishers:")
         publishers = self.root.findAll("div", re.compile("publisher"))
@@ -263,6 +271,8 @@ class BibleChapterExtract(WebTree):
         return
 
     def _processBook(self):
+        if self.root == None:
+            raise Exception("*** Error getting web page for " + self.reading + " ***")
         if self.isDebug:
             print("Processing book:")
         books = self.root.findAll("h1",  class_="passage-display")
@@ -293,6 +303,8 @@ class BibleChapterExtract(WebTree):
 
     @db_session
     def _setBibleStoreBook(self):
+        if self.bibleStoreVersion == None:
+            raise Exception("*** Error as bible store version not set ***")
         book = None
         if self.isDebug:
             print("Getting book:", self.book.ExtendedAbbreviation)
@@ -316,6 +328,8 @@ class BibleChapterExtract(WebTree):
         """
         Get previous and next chapter names if exist
         """
+        if self.root == None:
+            raise Exception("*** Error getting web page for " + self.reading + " ***")
         if self.isDebug:
             print("Processing previous and next")
         self.nextChapter = None
@@ -336,6 +350,8 @@ class BibleChapterExtract(WebTree):
     
     @db_session
     def _setBibleStoreChapter(self):
+        if self.bibleStoreBook == None:
+            raise Exception("*** Error as bible store book not set ***")
         chapter = None
         if self.isDebug:
             print("Getting chapter:", self.chapter)

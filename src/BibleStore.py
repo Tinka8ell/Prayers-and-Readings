@@ -1,6 +1,6 @@
 # Bible Store contains all the active view of the Bible content
 
-from pony.orm import *
+from pony.orm import Database, PrimaryKey, Required, Optional, Set, LongStr
 from os import environ as env
 from dotenv import load_dotenv
 

@@ -1,5 +1,6 @@
 from BibleStore import *
 from BiblePOPO import *
+from pony.orm import db_session, commit, select
 
 @db_session
 def makeVersion():
@@ -72,24 +73,43 @@ if __name__ == "__main__":
     versionId = version.id
     print("Get Version ... ", versionId )
     version = getVersion(id=versionId)
-    print("Got test version:", version.Abbreviation, version.Year, version.IsComplete, version.Name, version.Copyright, version.id)
-
-    print("Get Book ...", bookName)
-    book = getBook(Abbreviation=bookName)
-    if book != None:
-        print("Got test book:", book.ExtendedAbbreviation, book.Name, book.Total, book.IsComplete, book.id)
-        print("    with version:", book.version.Abbreviation, book.version.Year, book.version.IsComplete, book.version.Name, book.version.Copyright, book.version.id)
+    if version == None:
+        print("Error: Cannot find version id:", versionId)
     else:
-        print("Make Book ...")
-        book = makeBook(versionId)
-        print("Made test book:", book.ExtendedAbbreviation, book.Name, book.Total, book.IsComplete, book.id)
-        bookVersion = getVersion(id=book.versionId)
-        print("     with version:", bookVersion.Abbreviation, bookVersion.Year, bookVersion.IsComplete, bookVersion.Name, bookVersion.Copyright, bookVersion.id)
+        print("Got test version:", version.Abbreviation, version.Year, version.IsComplete, version.Name, version.Copyright, version.id)
 
-    bookId = book.id
-    print("Get Book ... ", bookId )
-    book = getBook(id=bookId)
-    print("Got test book:", book.ExtendedAbbreviation, book.Name, book.Total, book.IsComplete, book.id)
-    bookVersion = getVersion(id=book.versionId)
-    print("     with version:", bookVersion.Abbreviation, bookVersion.Year, bookVersion.IsComplete, bookVersion.Name, bookVersion.Copyright, bookVersion.id)
+        print("Get Book ...", bookName)
+        book = getBook(Abbreviation=bookName)
+        if book != None:
+            print("Got test book:", book.ExtendedAbbreviation, book.Name, book.Total, book.IsComplete, book.id)
+            if book.versionId == None:
+                print("Error: Book version id not set")
+            else:
+                version = getVersion(id=book.versionId)
+                if version == None:
+                    print("Error: Cannot find version id:", book.versionId)
+                else:
+                    print("    with version:", version.Abbreviation, version.Year, version.IsComplete, version.Name, version.Copyright, version.id)
+        else:
+            print("Make Book ...")
+            book = makeBook(versionId)
+            print("Made test book:", book.ExtendedAbbreviation, book.Name, book.Total, book.IsComplete, book.id)
+            bookVersion = getVersion(id=book.versionId)
+            if bookVersion == None:
+                print("Error: Cannot find version id:", book.versionId)
+            else:
+                print("     with version:", bookVersion.Abbreviation, bookVersion.Year, bookVersion.IsComplete, bookVersion.Name, bookVersion.Copyright, bookVersion.id)
+
+        bookId = book.id
+        print("Get Book ... ", bookId )
+        book = getBook(id=bookId)
+        if book == None:
+            print("Error: Cannot find book id:", bookId)
+        else:
+            print("Got test book:", book.ExtendedAbbreviation, book.Name, book.Total, book.IsComplete, book.id)
+            bookVersion = getVersion(id=book.versionId)
+            if bookVersion == None:
+                print("Error: Cannot find version id:", book.versionId)
+            else:
+                print("     with version:", bookVersion.Abbreviation, bookVersion.Year, bookVersion.IsComplete, bookVersion.Name, bookVersion.Copyright, bookVersion.id)
 

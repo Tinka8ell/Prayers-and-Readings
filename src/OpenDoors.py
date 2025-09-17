@@ -38,9 +38,13 @@ class WorldWatchListTree(WebTree):
         and the text in the element is the country.
         Build a list of country, url pairs.
         '''
+        if self.root is None:
+            return
         # assuming they stay consistent and we can access from:
         #    https://www.opendoorsuk.org/persecution/world-watch-list/
         rankingsWidget = self.root.find('div', class_="wwl__rankings")
+        if rankingsWidget is None:
+            return
         ### print(rankingsWidget.prettify()) # debug
         listItems = rankingsWidget.find_all('li')
         self.worldWatchList = []
@@ -126,9 +130,13 @@ class OpenDoors(WebTree):
         '''
         Find the prayer for today's country.
         '''
+        if self.root is None:
+            return
         # assuming they stay consistent and we can access from:
         #    https://www.opendoorsuk.org/persecution/world-watch-list/
         countryFeatureBoxWidget = self.root.find('div', class_="wwl-country__feature-box")
+        if countryFeatureBoxWidget is None:
+            return
         ### print(countryFeatureBoxWidget.prettify()) # debug
         self.content = []
         removeSection(countryFeatureBoxWidget, "div", "small-label")

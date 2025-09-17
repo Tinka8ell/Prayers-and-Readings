@@ -160,6 +160,8 @@ class DailyPrayer(WebTree):
         self.meditation = []  # place for the meditation
         self.text = ""  # place to build text strings as we parse
         self.state = State.SKIPPING  # initial state is to ignore till first "h2"
+        if self.root == None:
+            raise Exception("*** Error getting web page for " + self.url + " ***")
         mainContent = self.root.find('div', id="main-content")
         self.parseContents(mainContent, "")
         return
@@ -188,6 +190,8 @@ class DailyPrayer(WebTree):
         return
 
     def saveDaily(self, directory=None):
+        if self.date == None:
+            raise Exception("*** Error: No date found for daily prayer ***")
         if not directory:
             # get the name of our directory
             directory = os.path.dirname(__file__)

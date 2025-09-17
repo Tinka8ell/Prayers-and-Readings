@@ -32,7 +32,9 @@ class TestWebTree(unittest.TestCase):
         mock_urlopen.return_value = cm
 
         tree = WebTree("http://does.not.matter")
-        self.assertEqual(tree.root.prettify(), testResult)
+        self.assertIsNotNone(tree.root)
+        if tree.root is not None:
+            self.assertEqual(tree.root.prettify(), testResult)
 
 
 if __name__ == '__main__':

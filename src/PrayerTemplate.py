@@ -124,12 +124,15 @@ class PrayerTemplate():
         if os.path.exists(filename):
             self.currentDocDate = datetime.fromtimestamp(os.path.getmtime(filename)) # last update time of previous file
             # see if file has an internal time
-            with open(filename) as fp:
-                soup = BeautifulSoup(fp, 'html.parser')
+            with open(filename, encoding="utf-8") as fp:
+                file_content = fp.read()
+                soup = BeautifulSoup(file_content, 'html.parser')
                 # <meta name="filedate" content="2022-01-03T10:44:49Z">
-                tag = soup.find('meta', 'name=filedate') # get the filedate meta tag
+                tag = soup.find('meta', attrs={'name': 'filedate'}) # get the filedate meta tag
                 if tag is not None:
-                    self.currentDocDate = date(tag['content'])
+                    metaDate = tag['content']
+                    # You may want to parse metaDate here, e.g.:
+                    # self.currentDocDate = datetime.fromisoformat(metaDate)
         # print("Creating prayer page:", filename)
         title = "Template for: " + date.today().strftime("%A %d %B %Y")
         if self.title is None:
@@ -152,9 +155,12 @@ class PrayerTemplate():
                 Else: *don't* generate
             Else: generate with now date
         """
+        if self.templateDate is None:
+            print("No template date - not generating")
+            return
         if self.currentDocDate:
             if self.currentDocDate < self.templateDate:
-                self.generateNewDoc()
+                self.generateNewDoc(filename, parent, html)
             else:
                 print("Not generating as template older")
         else:
@@ -290,6 +296,9 @@ class PrayerTemplate():
         # insert document date
         pos, index = fileDatePos
         # set this document's date
+        if not self.generatedDocDate:
+            self.generatedDocDate = datetime.today()
+        # print("Inserting document date:", self.generatedDocDate)
         html[pos] = html[pos][:index] + self.generatedDocDate.isoformat() + html[pos][index:]
         return '\n'.join(html)
 

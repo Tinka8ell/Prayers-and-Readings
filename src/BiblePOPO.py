@@ -64,7 +64,7 @@ class BookPOPO(CanHaveId):
 
 class ChapterPOPO(CanHaveId):
     
-    def __init__(self, Name=None, Book=None, Chapter=0, Verses=0, IsComplete=False) -> None:
+    def __init__(self, Name=None, Book="", Chapter=0, Verses=0, IsComplete=False) -> None:
         super()
         self.Verses = Verses
         self.IsComplete = IsComplete

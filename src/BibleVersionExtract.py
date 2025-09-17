@@ -6,6 +6,7 @@
 from BibleStore import *
 from BibleBookExtract import BibleBookExtract
 from time import sleep
+from pony.orm import db_session, select
 
 class BibleVersionExtract():
     """
@@ -34,14 +35,20 @@ class BibleVersionExtract():
                 sleep(bookDelay)
                 book = BibleBookExtract(book.nextBook, version=version, isDebug=extractDebug)
                 if self.isDebug:
-                    print("Moving forward with:", book.Book.Name)
+                    if book.Book == None:
+                        print("Stopped moving forward as no next book")
+                    else:
+                        print("Moving forward with:", book.Book.Name)
 
             # look backward
             while previous != None:
                 sleep(bookDelay)
                 book = BibleBookExtract(previous, version=version, isDebug=extractDebug)
                 if self.isDebug:
-                    print("Moving backward with:", book.Book.Name)
+                    if book.Book == None:
+                        print("Stopped moving backward as no previous book")
+                    else:
+                        print("Moving backward with:", book.Book.Name)
                 previous = book.prevBook
 
             # as version is now complete, mark it so
